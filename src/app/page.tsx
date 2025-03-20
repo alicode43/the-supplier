@@ -1,103 +1,595 @@
+"use client";
+import { Button } from "@/components/ui/button";
+import Navbar from "../../components/frontend/Navbar";
+
+import {
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  DollarSign,
+  Clock,
+  ArrowRight,
+  Factory,
+  Wrench,
+  Package,
+  Timer,
+
+} from "lucide-react";
+// Link
+import Footer from "../../components/frontend/Footer";
+ 
 import Image from "next/image";
+import { useState } from "react";
+import CustomButton from "@/components/ui/CustomButton";
+ 
 
+const services = [
+  {
+    title: "Stamping",
+    // image: "https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?q=80&w=800&auto=format&fit=crop",
+    image: "/cnc.webp",
+    quote: "Get Your Quote",
+  },
+  {
+    title: "Laser Cutting",
+    // image: "https://images.unsplash.com/photo-1574170623305-62f9d09d4f7a?q=80&w=800&auto=format&fit=crop",
+    image: "/cnc.webp",
+    quote: "Get Your Quote",
+  },
+  {
+    title: "WaterJet Cutting",
+    // image: "https://images.unsplash.com/photo-1562204839-c557f89c80b1?q=80&w=800&auto=format&fit=crop",
+    image: "/cnc.webp",
+    quote: "Get Your Quote",
+  },
+  {
+    title: "CNC Machining",
+    // image: "https://images.unsplash.com/photo-1565439371131-f6c9a3bf2826?q=80&w=800&auto=format&fit=crop",
+    image: "/",
+    quote: "Get Your Quote",
+  },
+];
+const features = [
+  {
+    title: "Quality",
+    description:
+      "Discover a new standard of quality at TheSupplier. We meticulously vet every product and service to meet the highest standards, ensuring your satisfaction and trust in every transaction.",
+    icon: <Package className="w-12 h-12 text-blue-600" />,
+  },
+  {
+    title: "Competitive Price",
+    description:
+      "Unlock unbeatable value at TheSupplier. Benefit from our commitment to competitive pricing, ensuring you access high-quality products and services at the most cost-effective rates in the market.",
+    icon: <Factory className="w-12 h-12 text-blue-600" />,
+  },
+  {
+    title: "Delivery",
+    description:
+      "Reliable and timely delivery is our promise at TheSupplier. Count on us for on-time delivery, ensuring your products reach you promptly and efficiently, meeting your deadlines with precision.",
+    icon: <Timer className="w-12 h-12 text-blue-600" />,
+  },
+];
+
+const advantages = [
+  {
+    title: "Expand Production with Our Supplier Network",
+    description:
+      "Dive into a vast manufacturing network of 10,000+ providers. Unlock diverse capabilities and certifications seamlessly. Connect with global experts right from your desktop. Explore limitless possibilities in our Supplier Network today.",
+    icon: <Factory className="w-8 h-8 text-blue-600" />,
+  },
+  {
+    title: "Wide Range of Materials",
+    description:
+      "TheSupplier provides wide range of materials like all types of ferrous and non ferrous( Copper, Brass, Aluminum, All types of Stainless Steel in 200,300,400 Series and many more)",
+    icon: <Wrench className="w-8 h-8 text-blue-600" />,
+  },
+  {
+    title: "Quality Control",
+    description:
+      "Quality assured. TheSupplier, we uphold the highest standards. Our stringent quality control guarantees that every product and service on our platform is held to meticulous scrutiny, ensuring your satisfaction and trust in every transaction.",
+    icon: <Package className="w-8 h-8 text-blue-600" />,
+  },
+  {
+    title: "Delivery on Time",
+    description:
+      "Punctual delivery, guaranteed. At TheSupplier, we pride ourselves on timely service. Count on us for on-time delivery, ensuring your products reach you promptly and seamlessly, meeting your deadlines with precision.",
+    icon: <Timer className="w-8 h-8 text-blue-600" />,
+  },
+];
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % services.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + services.length) % services.length);
+  };
+
+  return (
+    <main>
+      <Navbar />
+
+      {/* Hero Section */}
+      <section className="bg-primary text-white py-12 md:py-20 ">
+        <div className="container mx-auto md:px-0 px-4  flex flex-col md:flex-row items-center gap-8 md:w-4/5 md:p-20">
+          <div className="flex-1 space-y-4">
+            <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-white/10 mb-4">
+              <span>Looking for Manufacturer?</span>
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold">
+              Precision Metal Parts On Demand
+            </h1>
+            <p className="md:text-lg">
+              Join TheSupplier, the fastest-growing startup, connecting you to a
+              vast network of 12,000+ suppliers for premium CNC components,
+              sheet metal stamping, and more.
+            </p>
+            <div className="flex flex-wrap gap-4 pt-4">
+              <button className="border border-white md:px-6 md:py-3 bg-white hover:bg-white/10 px-4 py-2  text-[#0A0A0A] font-medium rounded-full text-lg">
+                Contact Sales
+              </button>
+              <button className="border border-white md:px-6 md:py-3 bg-white hover:bg-white/10 px-4 py-2  text-[#0A0A0A] font-medium rounded-full text-lg">
+                Submit Drawing
+              </button>
+            </div>
+          </div>
+          <div className="flex-1">
+            <div className="rounded overflow-hidden shadow-lg">
+              <img
+                src="header.png"
+                alt="CNC Machine"
+                width={500}
+                height={400}
+                className="w-full object-cover"
+              />
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Feature  */}
+      <section className="w-4/5 m-auto my-14 ">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center md:mb-20 mb-12 ">
+            TheSupplier – Metal Parts Marketplace!
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="feature-card flex flex-col items-center text-center md:p-6">
+              <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center md:mb-6 mb-4">
+                <Star className="text-[#0066cc]" size={24} />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Quality Components</h3>
+            </div>
+
+            <div className="feature-card flex flex-col items-center text-center md:p-6">
+              <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center md:mb-6 mb-4">
+                <DollarSign className="text-[#0066cc]" size={24} />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Competitive Rates</h3>
+            </div>
+
+            <div className="feature-card flex flex-col items-center text-center md:p-6">
+              <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center md:mb-6 mb-4">
+                <Clock className="text-[#0066cc]" size={24} />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Timely Delivery</h3>
+            </div>
+          </div>
+        </div>
+        {/* Benefits */}
+        <div className="md:pt-14   pt-12 bg-gray-50">
+          <div className=" space-y-8">
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium flex items-center leading-[150%]">
+                <span className="inline-block w-2 h-2 bg-black rounded-full mr-2"></span>
+                Connect with Expert Manufacturers
+              </h3>
+              <p className="text-gray-600 pl-4">
+                Explore a diverse network of specialists in CNC, sheet metal
+                stamping, forging, casting, and more—your ideal supplier is just
+                a click away.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium flex items-center leading-[150%]">
+                <span className="inline-block w-2 h-2 bg-black rounded-full mr-2"></span>
+                Submit Your Enquiry with Ease
+              </h3>
+              <p className="text-gray-600 pl-4">
+                Let our dedicated team handle the rest. Our innovative platform
+                guarantees competitive pricing while maintaining top-notch
+                quality.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium flex items-center leading-[150%]">
+                <span className="inline-block w-2 h-2 bg-black rounded-full mr-2"></span>
+                Enjoy Hassle-Free Service
+              </h3>
+              <p className="text-gray-600 pl-4">
+                Experience seamless transactions and guaranteed on-time delivery
+                from top-rated suppliers, evaluated on Cost, Delivery, Packing,
+                and Quality.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Business Account Section */}
+      <section className="md:w-4/5  py-16 md:py-24 md:mx-auto">
+        <div className="container  px-4">
+          <div className=" max-w-3xl   mb-16">
+            <span className="text-[#737373] font-medium">Solutions</span>
+            <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
+              Open Your Business Account Online
+            </h2>
+            <p className="text-gray-600">
+              Keep your business account and all your finance needs safely
+              organized under one roof. Manage money quickly, easily &
+              efficiently. Whether you&apos;re alone or leading a team.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+
+      <section className="md:w-4/5 mx-auto">
+        {/* Prototype Section */}
+        <section className="container mx-auto px-4 py-16 md:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="order-2 lg:order-1">
+              <img
+                src="https://images.unsplash.com/photo-1581092335397-9583eb92d232?auto=format&fit=crop&q=80"
+                alt="Prototype development"
+                className="rounded-lg shadow-xl"
+                width={600}
+                height={400}
+              />
+            </div>
+            <div className="order-1 lg:order-2 space-y-6">
+              <span className="text-blue-600 font-medium">
+                RFQ for Prototype
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Precision in Every Prototype
+              </h2>
+              <p className="text-gray-600">
+                Start your path to innovation by submitting your RFQ for
+                prototyping solutions that are fast, customized, and focused on
+                quality. You&apos;ll receive a quick and efficient response to
+                your request, with services tailored to your specific needs.
+              </p>
+              {/* <Button variant="default">
+              Instant Quote
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button> */}
+              {/* <button className="flex w-40 h-13 p-4 pl-6 justify-center items-center gap-2 rounded-full bg-[rgba(124,189,255,0.50)]">
+      Button Text
+    </button> */}
+              <CustomButton icon={ArrowRight} text="Instant Quote" />
+            </div>
+          </div>
+        </section>
+
+        {/* feature 2 */}
+        <section className="container mx-auto px-4 py-16 md:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <span className="text-blue-600 font-medium">
+                High Volume Production
+              </span>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+                Large-Scale Manufacturing
+              </h1>
+              <p className="text-gray-600 text-lg">
+                Securely upload your production files with ease, ensuring a
+                smooth and hassle-free start to your project. Schedule a
+                consultation with our experienced team to discuss your specific
+                production needs and gain clarity every step of the way.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <CustomButton icon={ArrowRight} text="Contact Our Team" />
+                <CustomButton icon={ArrowRight} text=" Submit Drawings" />
+              </div>
+            </div>
+            <div className="relative">
+              <img
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80"
+                alt="Manufacturing facility"
+                className="rounded-lg shadow-xl"
+                width={600}
+                height={400}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Product Journey Section */}
+        <section className="bg-gray-50 py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <span className="text-blue-600 font-medium">
+                  End to End Product Development
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold">
+                  Guiding Your Product Journey
+                </h2>
+                <p className="text-gray-600">
+                  Experience a seamless journey from idea to production with our
+                  expert guidance through every phase—conceptualization, pilot
+                  runs, and full-scale manufacturing. Leveraging our reliable
+                  supplier connections, advanced manufacturing precision, and
+                  in-house production mastery.
+                </p>
+                <CustomButton icon={ArrowRight} text="Contact Our Team" />
+              </div>
+              <div>
+                <img
+                  src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80"
+                  alt="Product development process"
+                  className="rounded-lg shadow-xl"
+                  width={600}
+                  height={400}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      {/* Achievements */}
+      <section className="py-16 mx-auto md:py-24 px-4 bg-white">
+        <div className="md:w-4/5 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Customers */}
+            <div className="flex flex-col items-center sm:items-start text-center sm:text-left border-b sm:border-b-0 sm:border-r border-gray-200 pb-8 sm:pb-0 sm:pr-8">
+              <div className="text-4xl md:text-5xl font-semibold text-[#046BD2] mb-2">
+                330+
+              </div>
+              <div className="text-lg md:text-xl text-gray-800">Customers</div>
+            </div>
+
+            {/* Suppliers */}
+            <div className="flex flex-col items-center sm:items-start text-center sm:text-left border-b lg:border-b-0 lg:border-r border-gray-200 pb-8 lg:pb-0 lg:pr-8">
+              <div className="text-4xl md:text-5xl font-semibold text-[#046BD2] mb-2">
+                500+
+              </div>
+              <div className="text-lg md:text-xl text-gray-800">Suppliers</div>
+            </div>
+
+            {/* Items Developed */}
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left border-b sm:border-b-0 sm:border-r border-gray-200 pb-8 sm:pb-0 sm:pr-8">
+              <div className="text-4xl md:text-5xl font-semibold text-[#046BD2] mb-2">
+                20K+
+              </div>
+              <div className="text-lg md:text-xl text-gray-800">
+                Items Developed
+              </div>
+            </div>
+
+            {/* Countries */}
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+              <div className="text-4xl md:text-5xl font-semibold text-[#046BD2] mb-2">
+                30+
+              </div>
+              <div className="text-lg md:text-xl text-gray-800">Countries</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Advantages Section */}
+
+      <section className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="md:text-5xl text-3xl font-medium mb-4 ">
+            Supercharge CNC and Sheet Metal Stamping Component Manufacturing
+          </h2>
+          <p className=" text-gray-600 mb-12">
+            Utilize Our Digital Manufacturing Network to Your Advantage
+          </p>
+          <div className="grid md:grid-cols-2 gap-8">
+            {advantages.map((advantage, index) => (
+              <div
+                key={index}
+                className="flex flex-col gap-6 p-6 bg-white rounded-md shadow-sm border border-neutral-200"
+              >
+                {/* Icon container */}
+                <div className="flex items-center justify-center size-15 bg-stone-200 rounded-full">
+                  {advantage.icon}
+                </div>
+
+                {/* Content */}
+                <div className="flex flex-col gap-3">
+                  <h3 className="text-2xl font-semibold text-neutral-950 font-['Inter'] leading-7">
+                    {advantage.title}
+                  </h3>
+                  <p className="text-neutral-500 text-lg font-normal font-['Inter'] leading-relaxed">
+                    {advantage.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-4">
+        <div className="md:w-4/5 max-w-7xl  mx-auto">
+          <div className="flex flex-col md:items-start items-center text-center w-full space-y-3 md:space-y-4 px-4 md:px-6">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-neutral-950  leading-tight md:leading-snug">
+              Your Procurement Manager
+            </h2>
+            <p className="text-base md:text-lg text-neutral-500 font-normal font-['Inter'] leading-relaxed max-w-xl md:max-w-2xl">
+              What You Expect From Your Manager
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <div key={index} className="flex flex-col gap-6">
+                {/* Image container */}
+                <div className="relative bg-white shadow-sm border border-neutral-200 rounded-lg overflow-hidden p-4 flex justify-center items-center h-auto aspect-video">
+                  <div className="flex justify-center mb-4">{feature.icon}</div>
+                </div>
+
+                {/* Content */}
+                <div className="flex flex-col gap-3">
+                  <h3 className="text-2xl md:text-3xl font-semibold text-neutral-950 font-['Inter'] leading-tight">
+                    {feature.title}
+                  </h3>
+                  <p className="text-neutral-500 text-base md:text-lg font-normal font-['Inter'] leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+              </div>
+              // <Card key={index} className="p-6 text-center">
+              //   <div className="flex justify-center mb-4">{feature.icon}</div>
+              //   <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+              //   <p className="text-gray-600">{feature.description}</p>
+              // </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Services Carousel */}
+      <section className="py-20 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold mb-12 text-center">
+            Industry Dominance in CNC and Sheet Metal Stamping Parts with 12K+
+            Supplier
+          </h2>
+          <div className="relative">
+            <div className="overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              >
+                {services.map((service, index) => (
+                  <div key={index} className="w-full flex-shrink-0 px-4">
+                    <div className="relative h-[400px] rounded-lg overflow-hidden">
+                      <Image
+                        src={service.image}
+                        alt={service.title}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent text-white">
+                      <h3 className="group relative text-2xl font-bold mb-4 inline-block">
+  <span className="relative z-10 text-black transition-all duration-300
+    tracking-wide
+    white-text-stroke
+    group-hover:text-blue-200">
+    {service.title}
+  </span>
+  
+  {/* Animated underline */}
+  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-400 transform origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+  
+  {/* Side dot accents */}
+  <span className="absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-0 bg-blue-300 rounded-full transition-all duration-300 group-hover:h-full opacity-0 group-hover:opacity-50"></span>
+  <span className="absolute -right-2 bottom-0 w-1 h-0 bg-blue-300 rounded-full transition-all duration-300 group-hover:h-full opacity-0 group-hover:opacity-50 delay-75"></span>
+</h3>
+                        {/* <h3 className="text-2xl font-bold mb-2">
+                          {service.title}
+                        </h3> */}
+                        {/* <CustomButton text="Get Your Quote"></CustomButton> */}
+                        {/* <Button variant="secondary" size="sm">
+                          {service.quote}
+                        </Button> */}
+                        <button 
+  className="group relative overflow-hidden bg-white text-blue-600 font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:bg-blue-50 active:scale-95 flex items-center gap-2"
+  onClick={() => window.open('#quote-form', '_self')}
+>
+  <span className="relative z-10">{service.quote}</span>
+  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-600 transform origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+  <svg 
+    className="w-4 h-4 transform transition-transform duration-300 group-hover:translate-x-1" 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 20 20" 
+    fill="currentColor"
+  >
+    <path 
+      fillRule="evenodd" 
+      d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" 
+      clipRule="evenodd" 
+    />
+  </svg>
+</button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute left-4 top-1/2 -translate-y-1/2"
+              onClick={prevSlide}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute right-4 top-1/2 -translate-y-1/2"
+              onClick={nextSlide}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Bottom */}
+      {/* <section className="bg-blue-600 text-white py-20 px-4 text-center">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            Simplifying for Growing Business
+          </h1>
+          <p className="text-xl mb-8">
+            Join over 300+ customers already growing with TheSupplier
+          </p>
+          <Button size="lg" variant="secondary">
+            Contact Sales
+          </Button>
+        </div>
+      </section> */}
+        {/* Content Container */}
+  <div className="relative px-4 sm:px-6 md:px-10 lg:px-20 py-6 md:py-10 flex flex-col gap-8 md:gap-16">
+    {/* Blue CTA Section */}
+    <div className="w-full py-10 md:py-20 bg-sky-600 shadow-lg md:shadow-xl rounded-lg flex flex-col justify-center items-center gap-6 md:gap-10">
+      {/* Text Content */}
+      <div className="w-full flex flex-col justify-center items-center gap-2 md:gap-4 px-4 md:px-6">
+        <h2 className="text-white text-2xl md:text-4xl lg:text-5xl font-bold text-center">
+          Simplifying for Growing Business
+        </h2>
+        <p className="opacity-70 text-white text-base md:text-lg text-center max-w-2xl">
+          Join over 300+ customers already growing with TheSupplier
+        </p>
+      </div>
+      
+      {/* Button */}
+      <div className="flex justify-center items-center">
+        <button className="p-3 md:p-4 bg-white rounded-full  outline-1 outline-offset-[-1px] outline-neutral-200 flex justify-center items-center gap-2 text-sm md:text-base font-semibold hover:bg-gray-50 transition-colors">
+          Contact Sales
+        </button>
+      </div>
     </div>
+  </div>
+
+      <Footer />
+    </main>
   );
 }
