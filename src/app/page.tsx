@@ -13,15 +13,13 @@ import {
   Wrench,
   Package,
   Timer,
-
 } from "lucide-react";
 // Link
 import Footer from "../../components/frontend/Footer";
- 
+
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import CustomButton from "@/components/ui/CustomButton";
- 
 
 const services = [
   {
@@ -98,13 +96,56 @@ const advantages = [
 ];
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const slideInterval = useRef<NodeJS.Timeout | null>(null);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % services.length);
   };
-
+// console.log(isPaused ?)
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + services.length) % services.length);
+  };
+
+  useEffect(() => {
+    // Start the interval when component mounts
+    startSlideshow();
+    
+    // Clean up on unmount
+    return () => {
+      if (slideInterval.current) {
+        clearInterval(slideInterval.current);
+      }
+    };
+  }, []);
+
+  // // Pause/resume when isPaused changes
+  useEffect(() => {
+    if (isPaused) {
+      clearInterval(0);
+    } else {
+      startSlideshow();
+    }
+  }, [isPaused]);
+
+  const startSlideshow = () => {
+    // Clear any existing interval
+    if (slideInterval.current) {
+      clearInterval(slideInterval.current);
+    }
+    
+    // Set new interval
+    slideInterval.current = setInterval(() => {
+      nextSlide();
+    }, 2000); // 1 second interval
+  };
+
+  const handleMouseEnter = () => {
+    setIsPaused(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsPaused(false);
   };
 
   return (
@@ -153,7 +194,7 @@ export default function Home() {
       {/* Feature  */}
       <section className="w-4/5 m-auto my-14 ">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center md:mb-20 mb-12 ">
+          <h2 className="text-3xl md:text-4xl font-bold text-center md:mb-8 mb-12 ">
             TheSupplier – Metal Parts Marketplace!
           </h2>
 
@@ -223,7 +264,7 @@ export default function Home() {
       </section>
 
       {/* Business Account Section */}
-      <section className="md:w-4/5  py-16 md:py-24 md:mx-auto">
+      <section className="md:w-4/5  pt-16 md:pt-24 md:mx-auto">
         <div className="container  px-4">
           <div className=" max-w-3xl   mb-16">
             <span className="text-[#737373] font-medium">Solutions</span>
@@ -280,8 +321,8 @@ export default function Home() {
         </section>
 
         {/* feature 2 */}
-        <section className="container mx-auto px-4 py-16 md:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <section className="container mx-auto px-4 py-16 md:py-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <span className="text-blue-600 font-medium">
                 High Volume Production
@@ -313,34 +354,34 @@ export default function Home() {
         </section>
 
         {/* Product Journey Section */}
-        <section className="bg-gray-50 py-16 md:py-24">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <span className="text-blue-600 font-medium">
-                  End to End Product Development
-                </span>
-                <h2 className="text-3xl md:text-4xl font-bold">
-                  Guiding Your Product Journey
-                </h2>
-                <p className="text-gray-600">
-                  Experience a seamless journey from idea to production with our
-                  expert guidance through every phase—conceptualization, pilot
-                  runs, and full-scale manufacturing. Leveraging our reliable
-                  supplier connections, advanced manufacturing precision, and
-                  in-house production mastery.
-                </p>
-                <CustomButton icon={ArrowRight} text="Contact Our Team" />
-              </div>
-              <div>
-                <img
-                  src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80"
-                  alt="Product development process"
-                  className="rounded-lg shadow-xl"
-                  width={600}
-                  height={400}
-                />
-              </div>
+
+        <section className="container mx-auto px-4 py-16 md:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="order-2 lg:order-1">
+              <img
+                src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80"
+                alt="Product development process"
+                className="rounded-lg shadow-xl"
+                width={600}
+                height={400}
+              />
+            </div>
+            <div className="order-1 lg:order-2 space-y-6">
+              <span className="text-blue-600 font-medium">
+                End to End Product Development
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Guiding Your Product Journey
+              </h2>
+              <p className="text-gray-600">
+                Experience a seamless journey from idea to production with our
+                expert guidance through every phase—conceptualization, pilot
+                runs, and full-scale manufacturing. Leveraging our reliable
+                supplier connections, advanced manufacturing precision, and
+                in-house production mastery.
+              </p>
+
+              <CustomButton icon={ArrowRight} text="Contact Our Team" />
             </div>
           </div>
         </section>
@@ -469,7 +510,11 @@ export default function Home() {
             Industry Dominance in CNC and Sheet Metal Stamping Parts with 12K+
             Supplier
           </h2>
-          <div className="relative">
+          <div 
+            className="relative"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
             <div className="overflow-hidden">
               <div
                 className="flex transition-transform duration-500 ease-in-out"
@@ -485,47 +530,17 @@ export default function Home() {
                         className="object-cover"
                       />
                       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent text-white">
-                      <h3 className="group relative text-2xl font-bold mb-4 inline-block">
-  <span className="relative z-10 text-black transition-all duration-300
+                        <h3 className="group relative text-2xl font-bold mb-4 inline-block cursor-pointer">
+                          <span
+                            className="relative z-10 text-black transition-all duration-300
     tracking-wide
     white-text-stroke
-    group-hover:text-blue-200">
-    {service.title}
-  </span>
-  
-  {/* Animated underline */}
-  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-400 transform origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
-  
-  {/* Side dot accents */}
-  <span className="absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-0 bg-blue-300 rounded-full transition-all duration-300 group-hover:h-full opacity-0 group-hover:opacity-50"></span>
-  <span className="absolute -right-2 bottom-0 w-1 h-0 bg-blue-300 rounded-full transition-all duration-300 group-hover:h-full opacity-0 group-hover:opacity-50 delay-75"></span>
-</h3>
-                        {/* <h3 className="text-2xl font-bold mb-2">
-                          {service.title}
-                        </h3> */}
-                        {/* <CustomButton text="Get Your Quote"></CustomButton> */}
-                        {/* <Button variant="secondary" size="sm">
-                          {service.quote}
-                        </Button> */}
-                        <button 
-  className="group relative overflow-hidden bg-white text-blue-600 font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:bg-blue-50 active:scale-95 flex items-center gap-2"
-  onClick={() => window.open('#quote-form', '_self')}
->
-  <span className="relative z-10">{service.quote}</span>
-  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-600 transform origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
-  <svg 
-    className="w-4 h-4 transform transition-transform duration-300 group-hover:translate-x-1" 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 20 20" 
-    fill="currentColor"
-  >
-    <path 
-      fillRule="evenodd" 
-      d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" 
-      clipRule="evenodd" 
-    />
-  </svg>
-</button>
+    group-hover:text-blue-700 "
+                          >
+                            {service.title}
+                          </span>
+                        </h3>
+                        <CustomButton variant="secondary" text={service.quote} />
                       </div>
                     </div>
                   </div>
@@ -536,7 +551,12 @@ export default function Home() {
               variant="outline"
               size="icon"
               className="absolute left-4 top-1/2 -translate-y-1/2"
-              onClick={prevSlide}
+              onClick={() => {
+                prevSlide();
+                setIsPaused(true);
+                // Resume auto-cycling after a pause
+                setTimeout(() => setIsPaused(false), 3000);
+              }}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -544,7 +564,12 @@ export default function Home() {
               variant="outline"
               size="icon"
               className="absolute right-4 top-1/2 -translate-y-1/2"
-              onClick={nextSlide}
+              onClick={() => {
+                nextSlide();
+                setIsPaused(true);
+                // Resume auto-cycling after a pause
+                setTimeout(() => setIsPaused(false), 3000);
+              }}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -552,42 +577,33 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Bottom */}
-      {/* <section className="bg-blue-600 text-white py-20 px-4 text-center">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Simplifying for Growing Business
-          </h1>
-          <p className="text-xl mb-8">
-            Join over 300+ customers already growing with TheSupplier
-          </p>
-          <Button size="lg" variant="secondary">
-            Contact Sales
-          </Button>
-        </div>
-      </section> */}
-        {/* Content Container */}
-  <div className="relative px-4 sm:px-6 md:px-10 lg:px-20 py-6 md:py-10 flex flex-col gap-8 md:gap-16">
-    {/* Blue CTA Section */}
-    <div className="w-full py-10 md:py-20 bg-sky-600 shadow-lg md:shadow-xl rounded-lg flex flex-col justify-center items-center gap-6 md:gap-10">
-      {/* Text Content */}
-      <div className="w-full flex flex-col justify-center items-center gap-2 md:gap-4 px-4 md:px-6">
-        <h2 className="text-white text-2xl md:text-4xl lg:text-5xl font-bold text-center">
-          Simplifying for Growing Business
-        </h2>
-        <p className="opacity-70 text-white text-base md:text-lg text-center max-w-2xl">
-          Join over 300+ customers already growing with TheSupplier
-        </p>
-      </div>
-      
-      {/* Button */}
-      <div className="flex justify-center items-center">
-        <button className="p-3 md:p-4 bg-white rounded-full  outline-1 outline-offset-[-1px] outline-neutral-200 flex justify-center items-center gap-2 text-sm md:text-base font-semibold hover:bg-gray-50 transition-colors">
+      {/* Content Container */}
+      <div className="relative px-4 sm:px-6 md:px-10 lg:px-20 py-6 md:py-10 flex flex-col gap-8 md:gap-16">
+        {/* Blue CTA Section */}
+        <div className="w-full py-10 md:py-20 bg-primary shadow-lg md:shadow-xl rounded-lg flex flex-col justify-center items-center gap-6 md:gap-10">
+          {/* Text Content */}
+          <div className="w-full flex flex-col justify-center items-center gap-2 md:gap-4 px-4 md:px-6">
+            <h2 className="text-white text-2xl md:text-4xl lg:text-5xl font-bold text-center">
+              Simplifying for Growing Business
+            </h2>
+            <p className="opacity-70 text-white text-base md:text-lg text-center max-w-2xl">
+              Join over 300+ customers already growing with TheSupplier
+            </p>
+          </div>
+
+          {/* Button */}
+          <div className="flex justify-center items-center">
+            <CustomButton
+              icon={ArrowRight}
+              text="   Contact Sales"
+              className="bg-white hover:text-black"
+            />
+            {/* <button className="p-3 md:p-4 bg-white rounded-full  outline-1 outline-offset-[-1px] outline-neutral-200 flex justify-center items-center gap-2 text-sm md:text-base font-semibold hover:bg-gray-50 transition-colors">
           Contact Sales
-        </button>
+        </button> */}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
       <Footer />
     </main>

@@ -1,5 +1,5 @@
+import Link from 'next/link';
 import React from 'react';
- 
 
 const Navbar: React.FC = () => {
   return ( 
@@ -9,12 +9,12 @@ const Navbar: React.FC = () => {
         <span className="self-center text-2xl font-semibold whitespace-nowrap ">TheSuplier</span>
       </a>
       <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse ">
-        <button type="button" className="text-[#0A0A0A] bg-white  hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300   text-sm px-4 py-2 text-center rounded-full font-bold">Login</button>
 
-        
- 
-
-
+        <Link href={'/signin'}>
+          <button type="button" className="text-[#0A0A0A] bg-white hover:bg-blue-100 hover:text-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-sm px-6 py-2.5 text-center rounded-full transition-all duration-300 ease-in-out hover:shadow-md hover:scale-105">
+            Login
+          </button>
+        </Link>
 
         <button data-collapse-toggle="navbar-sticky" type="button" className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200" aria-controls="navbar-sticky" aria-expanded="false">
           <span className="sr-only">Open main menu</span>
@@ -24,27 +24,27 @@ const Navbar: React.FC = () => {
         </button>
       </div>
       <div className="items-center  justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
-        <ul className="flex  flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg  md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:classNambg-[#046BD2]">
+        <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-[#046BD2]">
           <li>
-            <a href="#" className="block  py-2 px-3 bg-blue-700 rounded-sm md:bg-transparent   md:p-0" aria-current="page">Home</a>
+            <a href="#" className="block py-2 px-3 bg-blue-700 rounded-sm md:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full" aria-current="page">Home</a>
           </li>
           <li>
-            <a href="#" className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">About</a>
+            <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">About</a>
           </li>
           <li>
-            <a href="#" className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Services</a>
+            <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Services</a>
           </li>
           <li>
-            <a href="#" className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">How it works</a>
+            <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">How it works</a>
           </li>
           <li>
-            <a href="#" className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Supplier Network</a>
+            <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Supplier Network</a>
           </li>
           <li>
-            <a href="#" className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Quality</a>
+            <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Quality</a>
           </li>
           <li>
-            <a href="#" className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Contact</a>
+            <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Contact</a>
           </li>
         </ul>
       </div>
