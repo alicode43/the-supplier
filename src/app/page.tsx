@@ -308,13 +308,7 @@ export default function Home() {
                 quality. You&apos;ll receive a quick and efficient response to
                 your request, with services tailored to your specific needs.
               </p>
-              {/* <Button variant="default">
-              Instant Quote
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button> */}
-              {/* <button className="flex w-40 h-13 p-4 pl-6 justify-center items-center gap-2 rounded-full bg-[rgba(124,189,255,0.50)]">
-      Button Text
-    </button> */}
+ 
               <CustomButton icon={ArrowRight} text="Instant Quote" />
             </div>
           </div>
