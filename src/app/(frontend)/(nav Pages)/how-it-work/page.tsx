@@ -399,51 +399,83 @@ Our mission? Revolutionize your sourcing experience with unparalleled convenienc
       </p>
     </div>
 
-    {/* Responsive Table */}
-    <div className="w-full overflow-hidden border border-black">
-      {/* Table Header */}
-      <div className="grid grid-cols-[minmax(150px,1fr)_minmax(150px,1fr)_minmax(150px,1fr)] md:grid-cols-[minmax(200px,1fr)_minmax(250px,2fr)_minmax(250px,2fr)] border-b border-black">
-        <div className="p-3 md:p-5 font-normal text-sm md:text-lg text-black font-['Inter'] border-r border-black">
-          Comparison Criteria
-        </div>
-        <div className="p-3 md:p-5 font-normal text-sm md:text-lg text-black font-['Inter'] border-r border-black">
-          Traditional Purchasing
-        </div>
-        <div className="p-3 md:p-5 font-normal text-sm md:text-lg text-black font-['Inter']">
-          TheSupplier
-        </div>
+    {/* Interactive Comparison Table */}
+    <div className="w-full overflow-hidden shadow-lg rounded-xl border border-gray-200">
+      {/* Table Header - Visible on all screen sizes */}
+      <div className="relative overflow-x-auto">
+        <table className="w-full text-left">
+          <thead>
+            <tr className="bg-gradient-to-r from-gray-50 to-blue-50">
+              <th scope="col" className="p-4 md:p-6 text-sm md:text-base font-semibold text-gray-900 whitespace-nowrap border-b border-r border-gray-200">
+                Comparison Criteria
+              </th>
+              <th scope="col" className="p-4 md:p-6 text-sm md:text-base font-semibold text-gray-700 whitespace-nowrap border-b border-r border-gray-200">
+                Traditional Purchasing
+              </th>
+              <th scope="col" className="p-4 md:p-6 text-sm md:text-base font-semibold text-primary whitespace-nowrap border-b border-gray-200 bg-blue-50">
+                <span className="flex items-center">
+                  TheSupplier Advantage
+                  <svg className="w-5 h-5 ml-1 text-primary" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {comparisonData.map((row, index) => (
+              <tr 
+                key={index} 
+                className={`
+                  border-b border-gray-200 last:border-none 
+                  transition-colors hover:bg-blue-50/30 group
+                  ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
+                `}
+              >
+                <td className="p-4 md:p-6 text-sm md:text-base font-medium text-gray-900 border-r border-gray-200">
+                  {row.criteria}
+                </td>
+                <td className="p-4 md:p-6 text-sm md:text-base text-gray-600 border-r border-gray-200">
+                  {row.traditional}
+                </td>
+                <td className="p-4 md:p-6 text-sm md:text-base text-gray-800 bg-blue-50/40 group-hover:bg-blue-50/70 transition-colors">
+                  <div className="flex items-start">
+                    <span className="inline-block w-2 h-2 mt-1.5 mr-2 bg-primary rounded-full shrink-0"></span>
+                    <span>{row.theSupplier}</span>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-
-      {/* Table Rows */}
-      {comparisonData.map((row, index) => (
-        <div key={index} className="grid grid-cols-[minmax(150px,1fr)_minmax(150px,1fr)_minmax(150px,1fr)] md:grid-cols-[minmax(200px,1fr)_minmax(250px,2fr)_minmax(250px,2fr)] border-b border-black last:border-b-0">
-          <div className="p-3 md:p-5 font-normal text-sm md:text-lg text-black font-['Inter'] border-r border-black">
-            {row.criteria}
-          </div>
-          <div className="p-3 md:p-5 font-normal text-sm md:text-lg text-black font-['Inter'] border-r border-black">
-            {row.traditional}
-          </div>
-          <div className="p-3 md:p-5 font-normal text-sm md:text-lg text-black font-['Inter']">
-            {row.theSupplier}
-          </div>
-        </div>
-      ))}
     </div>
 
-    {/* Mobile-Only Version (Stacked Cards) */}
-    <div className="md:hidden space-y-6 mt-6">
+    {/* Mobile Cards View for better responsiveness on small screens */}
+    <div className="md:hidden space-y-6 mt-4">
       {comparisonData.map((row, index) => (
-        <div key={`mobile-${index}`} className="border border-black rounded overflow-hidden">
-          <div className="p-4 bg-gray-100 font-medium text-base text-black font-['Inter']">
+        <div 
+          key={`mobile-${index}`} 
+          className="border border-gray-200 rounded-xl overflow-hidden shadow-sm transition-all hover:shadow-md hover:border-primary/30"
+        >
+          <div className="p-4 bg-gradient-to-r from-gray-50 to-blue-50 font-semibold text-base text-gray-900 font-['Inter']">
             {row.criteria}
           </div>
-          <div className="border-t border-black p-4">
-            <h4 className="font-medium text-sm mb-2">Traditional Purchasing</h4>
-            <p className="text-sm text-black">{row.traditional}</p>
+          <div className="border-t border-gray-200 p-4">
+            <h4 className="font-medium text-sm mb-2 text-gray-700">Traditional Purchasing:</h4>
+            <p className="text-sm text-gray-600">{row.traditional}</p>
           </div>
-          <div className="border-t border-black p-4 bg-gray-50">
-            <h4 className="font-medium text-sm mb-2">TheSupplier</h4>
-            <p className="text-sm text-black">{row.theSupplier}</p>
+          <div className="border-t border-gray-200 p-4 bg-blue-50/40">
+            <h4 className="font-medium text-sm mb-2 text-primary flex items-center">
+              TheSupplier Advantage:
+              <svg className="w-4 h-4 ml-1 text-primary" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+              </svg>
+            </h4>
+            <div className="flex items-start">
+              <span className="inline-block w-2 h-2 mt-1.5 mr-2 bg-primary rounded-full shrink-0"></span>
+              <p className="text-sm text-gray-800">{row.theSupplier}</p>
+            </div>
           </div>
         </div>
       ))}
