@@ -35,7 +35,7 @@ const Navbar: React.FC = () => {
             <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Services</a>
           </li>
           <li>
-            <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">How it works</a>
+            <a href="/how-it-work" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">How it works</a>
           </li>
           <li>
             <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Supplier Network</a>

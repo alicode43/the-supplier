@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import Navbar from "../../components/frontend/Navbar";
+import Navbar from "@/components/frontend/Navbar";
 
 import {
   ChevronLeft,

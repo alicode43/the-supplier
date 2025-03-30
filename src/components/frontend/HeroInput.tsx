@@ -2,10 +2,52 @@
 import React, { useState, useRef, DragEvent, ChangeEvent } from "react";
 import { Upload, FileUp, Check, X, AlertCircle } from "lucide-react";
 
+// Define props interface for text content
+interface HeroInputProps {
+  // Main content text
+  title?: string;
+  subtitle?: string;
+  description?: React.ReactNode;
 
+  // Upload area text
+  uploadTitle?: string;
+  uploadSubtitle?: string;
+  dragDropText?: string;
+  selectedFilesTitle?: string;
+  addMoreFilesText?: string;
 
+  // Button text
+  browseButtonText?: string;
+  addMoreButtonText?: string;
+  submitButtonText?: string;
 
-function HeroInput() {
+  // File size info
+  maxFileSize?: number;
+  fileSizeText?: string;
+}
+
+function HeroInput({
+  // Main content text with defaults
+  title = "Die Casting",
+  subtitle = "Forging",
+  description,
+
+  // Upload area text with defaults
+  uploadTitle = "Submit Your Drawing",
+  uploadSubtitle,
+  dragDropText = "Drag & drop your files here, or",
+  selectedFilesTitle = "Selected Files",
+  addMoreFilesText = "You can add more files",
+
+  // Button text with defaults
+  browseButtonText = "Browse Drawings",
+  addMoreButtonText = "Add More Drawings",
+  submitButtonText = "Submit Drawing",
+
+  // File size info with defaults
+  maxFileSize = 50,
+  fileSizeText = "Files should be less than {maxFileSize}MB. For larger files, please contact support."
+}: HeroInputProps) {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -26,6 +68,14 @@ function HeroInput() {
     ".dwg",
     ".pdf",
   ];
+
+  // Format the accepted formats for display
+  const formattedFormats =
+    uploadSubtitle ||
+    acceptedFormats.map((format) => format.replace(".", "").toUpperCase()).join(" | ");
+
+  // Format file size text
+  const formattedFileSizeText = fileSizeText.replace("{maxFileSize}", maxFileSize.toString());
 
   // Validate file extensions
   const validateFiles = (filesToValidate: File[]): File[] => {
@@ -130,33 +180,30 @@ function HeroInput() {
             <div className="inline-flex justify-start items-center gap-2.5">
               <div className="h-6 px-2.5 bg-lime-50 rounded-full flex justify-start items-center gap-2">
                 <div className="justify-start text-sky-600 text-xs font-medium font-['Inter'] leading-tight">
-                  Forging
+                  {subtitle}
                 </div>
               </div>
             </div>
             <div className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-semibold font-['Inter'] leading-tight lg:leading-[81.60px]">
-              Die Casting
+              {title}
             </div>
             <div className="w-full text-white text-base md:text-lg font-normal font-['Inter'] leading-relaxed">
-              <span className="text-white font-bold">
-                Precision Manufacturing:
-              </span>{" "}
-              Our die casting process ensures high precision and intricate
-              detail, meeting the exact specifications required for functional
-              components.
-              <br />
-              <span className="text-white font-bold">
-                Material Versatility:{" "}
-              </span>
-              We work with a range of metal alloys to provide customized
-              solutions tailored to your specific application.
-              <br />
-              <span className="text-white font-bold">
-                Surface Finishing:
-              </span>{" "}
-              After die casting, components can undergo further refinement
-              through processes like CNC machining, shot-blasting, texturing,
-              plating, and painting to achieve the desired surface finish.
+              {description || (
+                <>
+                  <span className="text-white font-bold">Precision Manufacturing:</span>{" "}
+                  Our die casting process ensures high precision and intricate detail,
+                  meeting the exact specifications required for functional components.
+                  <br />
+                  <span className="text-white font-bold">Material Versatility: </span>
+                  We work with a range of metal alloys to provide customized solutions
+                  tailored to your specific application.
+                  <br />
+                  <span className="text-white font-bold">Surface Finishing:</span>{" "}
+                  After die casting, components can undergo further refinement through
+                  processes like CNC machining, shot-blasting, texturing, plating, and
+                  painting to achieve the desired surface finish.
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -193,23 +240,20 @@ function HeroInput() {
 
                   <div className="flex flex-col gap-2">
                     <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white">
-                      Submit Your Drawing
+                      {uploadTitle}
                     </h2>
-                    <p className="text-sm sm:text-base text-white/70">
-                      SAT | STEP | STP | SLDPRT | STL | CATPART | IPT | 3DXML |
-                      PTC | PRT | DWG | PDF
-                    </p>
+                    <p className="text-sm sm:text-base text-white/70">{formattedFormats}</p>
                   </div>
 
                   <div className="flex flex-col gap-2 text-white/70 text-sm">
-                    <p>Drag & drop your files here, or</p>
+                    <p>{dragDropText}</p>
                   </div>
                 </>
               ) : (
                 <>
                   <div className="flex flex-col gap-4 w-full">
                     <h2 className="text-2xl sm:text-3xl font-semibold text-white text-center">
-                      Selected Files
+                      {selectedFilesTitle}
                     </h2>
                     <div className="w-full space-y-2 max-h-52 overflow-y-auto p-2">
                       {files.map((file, index) => (
@@ -219,9 +263,7 @@ function HeroInput() {
                         >
                           <div className="flex items-center gap-2 text-white truncate">
                             <FileUp className="w-5 h-5 flex-shrink-0" />
-                            <span className="truncate max-w-[200px] sm:max-w-sm">
-                              {file.name}
-                            </span>
+                            <span className="truncate max-w-[200px] sm:max-w-sm">{file.name}</span>
                           </div>
                           <button
                             onClick={() => removeFile(index)}
@@ -233,9 +275,7 @@ function HeroInput() {
                       ))}
                     </div>
                   </div>
-                  <p className="text-sm text-white/70">
-                    You can add more files
-                  </p>
+                  <p className="text-sm text-white/70">{addMoreFilesText}</p>
                 </>
               )}
 
@@ -243,7 +283,7 @@ function HeroInput() {
                 onClick={handleButtonClick}
                 className="px-6 py-3 bg-white rounded-full text-sky-600 font-semibold transition-all hover:bg-sky-50 flex items-center gap-2"
               >
-                {files.length === 0 ? <>Browse Drawings</> : <>Add More Drawings</>}
+                {files.length === 0 ? browseButtonText : addMoreButtonText}
               </button>
 
               {files.length > 0 && (
@@ -252,7 +292,7 @@ function HeroInput() {
                   className="px-6 py-3 bg-sky-600 text-white rounded-full font-semibold transition-all hover:bg-sky-700 flex items-center gap-2"
                 >
                   <Check className="w-5 h-5" />
-                  Submit Drawing
+                  {submitButtonText}
                 </button>
               )}
             </div>
@@ -268,10 +308,7 @@ function HeroInput() {
             />
           </div>
 
-          <div className="mt-4 text-xs text-white/60 text-center">
-            Files should be less than 50MB. For larger files, please contact
-            support.
-          </div>
+          <div className="mt-4 text-xs text-white/60 text-center">{formattedFileSizeText}</div>
         </div>
       </div>
     </div>

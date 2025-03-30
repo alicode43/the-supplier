@@ -1,12 +1,14 @@
-"use client";
-import { useState } from "react";
-import Navbar from "@/components/frontend/Navbar";
-import Footer from "@/components/frontend/Footer";
-import HeroInput from "@/components/frontend/HeroInput";
-import DrawingShowCase from "@/components/frontend/DrawingShowCase";
-import AboutJob from "@/components/frontend/aboutJob";
-import BottomCTA from "@/components/frontend/BottomCTA";
-import { FileCheck, Clock } from "lucide-react";
+"use client"
+import { useState } from 'react'
+import Navbar from '@/components/frontend/Navbar'
+import Feature from '@/components/frontend/Feature'
+import HeroInput from '@/components/frontend/HeroInput'
+import DrawingShowCase from '@/components/frontend/DrawingShowCase'
+import AboutJob from '@/components/frontend/aboutJob'
+import { FileCheck,Clock,} from 'lucide-react'
+import Footer from '@/components/frontend/Footer'
+import BottomCTA from '@/components/frontend/BottomCTA'
+
 
 const serviceItems = [
   {
@@ -34,16 +36,6 @@ const serviceItems = [
       "TheSupplier provides wide range of materials like all types of ferrous and non ferrous( Copper, Brass, Aluminum, All types of Stainless Steel in 200,300,400 Series and many more)",
   },
 ];
-
-function Page() {
-  // State to track which accordion items are open
-  const [openAccordion, setOpenAccordion] = useState<string | null>("copper");
-
-  // Function to toggle accordion
-  const toggleAccordion = (id: string) => {
-    setOpenAccordion(openAccordion === id ? null : id);
-  };
-
   // Materials data
   const materials = [
     { id: "stainless", name: "Stainless Steel",
@@ -91,38 +83,75 @@ function Page() {
      },
   ];
 
-  // Custom description for Die Casting
-  const dieCastingDescription = (
+function ForgingPartsPage() {
+    const [openAccordion, setOpenAccordion] = useState<string | null>("copper");
+  
+    // Function to toggle accordion
+    const toggleAccordion = (id: string) => {
+      setOpenAccordion(openAccordion === id ? null : id);
+    };
+
+  const forgingDescription = (
     <>
       <span className="text-white font-bold">
-        High-Precision Manufacturing:
+        High-Precision Forging:
       </span>{" "}
-      Our advanced die casting process delivers exceptional precision and intricate
-      detail, ensuring components meet exact functional specifications.
+      Our advanced forging processes deliver exceptional strength and structural integrity,
+      ensuring components meet exact functional specifications and performance requirements.
       <br />
       <span className="text-white font-bold">
         Material Expertise:{" "}
       </span>
-      We work with premium aluminum, zinc, magnesium, and copper alloys to create
-      customized solutions perfectly tailored to your application requirements.
+      We work with premium steel, aluminum, titanium, and various alloys to create
+      customized forging solutions perfectly tailored to your application requirements.
       <br />
       <span className="text-white font-bold">
-        Superior Surface Finishing:
+        Superior Finishing & Quality:
       </span>{" "}
-      All components undergo comprehensive refinement through state-of-the-art
-      CNC machining, shot-blasting, texturing, plating, and painting processes
-      to achieve flawless surface quality.
+      All forged components undergo comprehensive refinement through state-of-the-art
+      heat treatment, machining, and finishing processes to achieve optimal mechanical 
+      properties and surface quality.
     </>
   );
-
   return (
+    
     <div>
-      <Navbar />
-      {/* Hero Section with custom text */}
+        <Navbar/>
+        <section className="w-full py-8 md:py-12 lg:py-16">
+        <div className="container mx-auto">
+          <h1 className="w-full text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold font-['Inter'] leading-tight md:leading-snug lg:leading-[1.15] text-neutral-950 max-w-5xl mx-auto">
+            TheSupplier – Metal Parts Marketplace!
+          </h1>
+        </div>
+        <Feature
+        img="/features.png"
+        isButton={false}
+        subTitle="Introduction to Forging"
+        title="Introduction to Forging"
+        direction="row"
+        description="Forging is a manufacturing process that involves shaping metal through intense pressure, typically by hammering, pressing, or rolling. The resultant components, known as forgings, possess exceptional strength and durability, making them ideal for applications where reliability and safety are paramount.
+
+At TheSupplier.in, we specialize in providing high-quality forging solutions tailored to meet your specific requirements. Our commitment to precision, quality, and customer satisfaction ensures that you receive top-notch forgings delivered on schedule."
+      />
+              <Feature
+        img="/features.png"
+        isButton={false}
+        subTitle="Our Forging Capabilities"
+        title="Our Forging Capabilities"
+        direction="row"
+        description="At TheSupplier.in, we leverage state-of-the-art technology and industry expertise to deliver best-in-class forging solutions. Our capabilities include:
+Open-Die Forging: Utilizing flat dies without pre-cut profiles, we perform open-die forging to shape large parts weighing over 150 tons and up to 25 meters in length. This method allows for the creation of prototypes and low-volume production with excellent grain flow orientation and deformation characteristics.
+Closed-Die Forging: Employing dies containing impressions of the desired shape, we achieve precise and complex geometries with closer tolerances. This process is suitable for a wide range of metals and alloys, including carbon and alloy steels, stainless steel, aluminum, and copper alloys.
+Cold Forging: We offer cold forging processes such as bending, drawing, and extruding, ideal for creating shapes with superior dimensional control and surface finish. Cold forging is particularly effective for parts weighing up to 5 kg and offers advantages in product uniformity and contamination control.
+Rolled Ring Forging: Our expertise extends to rolled ring forging, where thick metal pieces are punched to create donut shapes and then rolled or pounded into thin rings. This process is suitable for various applications across industries."
+      />
+        
+      </section>
+
       <HeroInput 
-        title="Die Casting Excellence"
-        subtitle="Premium Forging"
-        description={dieCastingDescription}
+        title="Forging Excellence"
+        subtitle="Premium Forging Services"
+        description={forgingDescription}
         uploadTitle="Upload Your CAD Files"
         dragDropText="Drag & drop your design files here, or"
         browseButtonText="Select Files"
@@ -131,7 +160,8 @@ function Page() {
         maxFileSize={100}
         fileSizeText="Maximum file size: {maxFileSize}MB. Contact our team for larger files."
       />
-      <DrawingShowCase />
+      <DrawingShowCase/>
+
       <section className="w-full py-10 md:py-16 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-neutral-950 text-center leading-tight md:leading-[1.2] font-['Inter'] max-w-5xl mx-auto">
@@ -211,5 +241,4 @@ function Page() {
     </div>
   );
 }
-
-export default Page;
+export default ForgingPartsPage

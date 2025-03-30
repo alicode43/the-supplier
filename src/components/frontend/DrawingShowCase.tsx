@@ -17,19 +17,19 @@ function DrawingShowCase() {
     {
       id: 'cnc-turning',
       title: 'CNC Turning',
-      imageUrl: '/images/cnc-turning.jpg', // Replace with actual image paths
+      imageUrl: '/cnc.jpg', // Replace with actual image paths
       description: 'Precision CNC turning services for complex components'
     },
     {
       id: 'cnc-milling',
       title: 'CNC Milling',
-      imageUrl: '/images/cnc-milling.jpg', // Replace with actual image paths
+      imageUrl: '/cnc.jpg', // Replace with actual image paths
       description: 'High-quality CNC milling for diverse material applications'
     },
     {
       id: 'edm-machining',
       title: 'EDM Machining',
-      imageUrl: '/images/edm-machining.jpg', // Replace with actual image paths
+      imageUrl: '/cnc.jpg', // Replace with actual image paths
       description: 'Advanced EDM machining for intricate parts and components'
     }
   ];
@@ -39,21 +39,12 @@ function DrawingShowCase() {
 
   return (
     <section className="relative py-14 px-4 sm:px-6 lg:px-20 overflow-hidden">
-      {/* Background grid lines - hidden on mobile for cleaner UI */}
-      <div className="hidden lg:flex absolute top-0 left-0 right-0 bottom-0 justify-between opacity-60 px-10 lg:px-28 pointer-events-none">
-        {[1, 2, 3, 4, 5].map((index) => (
-          <div 
-            key={index}
-            className="w-px h-full bg-neutral-300" 
-            aria-hidden="true"
-          ></div>
-        ))}
-      </div>
+
 
       <div className="max-w-7xl mx-auto space-y-10 md:space-y-14 relative z-10">
         {/* Heading Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-10">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-neutral-950 leading-tight max-w-3xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-neutral-950 leading-tight md:max-w-full max-w-3xl">
             Just Send Us Your Drawing For Any Kinds Of Forging Parts
           </h2>
         </div>
@@ -88,7 +79,7 @@ function DrawingShowCase() {
                 </div>
                 
                 {/* Overlay on hover */}
-                <div className={`absolute inset-0 bg-sky-600 bg-opacity-0 transition-all duration-300 flex items-center justify-center ${
+                <div className={`absolute inset-0  bg-opacity-0 transition-all duration-300 flex items-center justify-center ${
                   hoveredCard === card.id ? 'bg-opacity-70' : ''
                 }`}>
                   {hoveredCard === card.id && (
