@@ -9,16 +9,24 @@ interface BottomCTAProps {
   buttonIcon?: LucideIcon;
   backgroundColor?: string;
   className?: string;
+  // text?: string;
+  
+  textSize?: string;
+  heading?:string
 }
 
 function BottomCTA({
   title = "Simplifying for Growing Business",
   description = "Join over 300+ customers already growing with TheSupplier",
-  buttonText = "Contact Sales",
+  buttonText,
   buttonIcon = ArrowRight,
   backgroundColor = "bg-primary", // Default blue background
+  // textSize = heading  || "2xl",
   className = "",
 }: BottomCTAProps) {
+  // Use default text if buttonText is not provided or empty
+  const buttonDisplayText = buttonText || "Contact Sales";
+  
   return (
     <div className={`relative px-4 sm:px-6 md:px-10 lg:px-20 py-6 md:py-10 flex flex-col gap-8 md:gap-16 ${className}`}>
       {/* CTA Section */}
@@ -37,7 +45,7 @@ function BottomCTA({
         <div className="flex justify-center items-center">
           <CustomButton
             icon={buttonIcon}
-            text={buttonText}
+            text={buttonDisplayText}
             className="bg-white hover:text-black"
           />
         </div>

@@ -41,15 +41,15 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       <span className="absolute inset-0 bg-white/20 transform scale-0 rounded-full transition-transform duration-500 origin-center group-hover:scale-100 group-active:scale-100" />
       
       {/* Button content */}
-      <span className="relative z-10 flex items-center justify-center gap-2 text-[#0284c7]">
-        <span className="transition-all duration-300 group-hover:tracking-wide ">{text}</span>
+      <div className="relative z-10 flex items-center justify-center w-full gap-2 text-[#0284c7]">
+        <span className="transition-all text-center duration-300 group-hover:tracking-wide">{text}</span>
         {Icon && (
           <Icon 
             className="text-current transform transition-all duration-300 group-hover:translate-x-0.5" 
             size={20}
           />
         )}
-      </span>
+      </div>
       
       {/* Bottom border animation */}
       <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white/40 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100 origin-left" />
