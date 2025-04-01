@@ -2,11 +2,11 @@
 import Footer from '@/components/frontend/Footer'
 import Navbar from '@/components/frontend/Navbar'
 import React, { useState } from 'react'
-import { Plane, Ship, Truck, Package } from 'lucide-react'
+import { Plane, Truck} from 'lucide-react'
 import BottomCTA from '@/components/frontend/BottomCTA'
+import Image from 'next/image'
 
-
-function page() {
+function Page() {
       const [openFaq, setOpenFaq] = useState<string | null>(null);
     
       const toggleFaq = (id: string) => {
@@ -60,15 +60,19 @@ function page() {
             </div>
             
             {/* Graphic Container */}
-            <div className="w-full lg:w-[500px] h-80 sm:h-96 relative bg-neutral-50 border border-neutral-200 overflow-hidden">
-              <img 
-                className="w-full h-[80%] absolute bottom-0 left-0 object-cover mix-blend-luminosity" 
-                src="https://placehold.co/500x313" 
-                alt="Delivery illustration"
-              />
+            <div className="w-full lg:w-[500px] h-80 sm:h-96 relative border border-neutral-200 overflow-hidden">
+            <Image 
+  className="mix-blend-luminosity object-cover" 
+  src="/globe.png" 
+  alt="Delivery illustration"
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 500px"
+  priority
+  style={{ objectPosition: 'bottom' }}
+/>
               
               {/* Shipping Icons - simplified for responsiveness */}
-              <div className="absolute top-1/4 left-[10%] w-12 h-12 sm:w-16 sm:h-16 bg-zinc-100 flex items-center justify-center">
+              {/* <div className="absolute top-1/4 left-[10%] w-12 h-12 sm:w-16 sm:h-16 bg-zinc-100 flex items-center justify-center">
                 <Plane className="w-8 h-8 text-sky-700" />
               </div>
               
@@ -84,7 +88,7 @@ function page() {
                 <div className="h-1/3 bg-yellow-300 w-full"></div>
                 <div className="h-1/3 bg-sky-300/50 w-full"></div>
                 <div className="h-1/3 bg-rose-700 w-full"></div>
-              </div>
+              </div> */}
             </div>
           </div>
           
@@ -211,4 +215,4 @@ you to Become Our Partner' buttonText='Register & Start'/>
   )
 }
 
-export default page
+export default Page

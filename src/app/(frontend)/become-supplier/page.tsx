@@ -5,8 +5,9 @@ import { ChevronRight } from 'lucide-react'
 import React, { useState } from 'react'
 import BottomCTA from "@/components/frontend/BottomCTA";
 import Footer from '@/components/frontend/Footer';
+import Image from 'next/image'
 
-function page() {
+function Page() {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
 
   const toggleFaq = (id: string) => {
@@ -64,13 +65,14 @@ function page() {
     </div>
     <div className="flex-1">
       <div className="rounded overflow-hidden shadow-lg">
-        <img
-          src="header.png"
-          alt="CNC Machine"
-          width={500}
-          height={400}
-          className="w-full object-cover"
-        />
+      <Image
+  src="/header.png"
+  alt="CNC Machine"
+  width={500}
+  height={400}
+  className="w-full object-cover"
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 500px"
+/>
       </div>
     </div>
   </div>
@@ -177,7 +179,7 @@ you to Become Our Partner' buttonText='Register & Start'/>
         
         <div>
           <span className="text-black text-lg font-medium leading-relaxed block">Simple and Cost-Free Partnership</span>
-          <span className="text-neutral-500 text-lg leading-relaxed">Experience a hassle-free partnership with TheSupplier – no transaction or service fees, and no commitments to fulfill a specific number of jobs per month.</span>
+            <span className="text-neutral-500 text-lg leading-relaxed">Experience a hassle-free partnership with TheSupplier &#8211; no transaction or service fees, and no commitments to fulfill a specific number of jobs per month.</span>
         </div>
         
         <div>
@@ -248,4 +250,4 @@ you to Become Our Partner' buttonText='Register & Start'/>
   )
 }
 
-export default page
+export default Page
