@@ -115,6 +115,7 @@ export default function Page() {
   };
 
   const goToPrevious = () => {
+    
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
@@ -129,7 +130,8 @@ export default function Page() {
       <section className="container mx-auto px-4 py-6 sm:w-11/12">
         <div className="mb-8 mt-4">
           <h1 className="text-start text-neutral-800 text-3xl font-bold transition-all duration-300 hover:text-blue-600 cursor-pointer sm:text-4xl md:text-5xl">
-          My Submitted Offers
+          My Submitted 
+          Offers
           </h1>
           <div className="w-24 h-1 bg-blue-500 mt-2 rounded-full hover:w-32 transition-all duration-300"></div>
         </div>
