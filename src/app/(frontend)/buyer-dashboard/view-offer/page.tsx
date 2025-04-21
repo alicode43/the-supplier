@@ -1,5 +1,5 @@
 import React from 'react'
-import Navbar from '@/components/dashboard/Navbar'
+import Navbar from '../Navbar';
 import { ChevronRightIcon } from 'lucide-react'
  
 function page() {

@@ -1,6 +1,6 @@
 "use client";
 
-import Navbar from "@/components/dashboard/Navbar";
+import Navbar from '../Navbar';
 import { ChevronDownIcon, Undo2Icon } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";

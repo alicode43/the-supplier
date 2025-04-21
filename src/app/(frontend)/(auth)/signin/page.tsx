@@ -1,19 +1,106 @@
 "use client"
 
 import { useState } from "react"
+import Cookies from "js-cookie"
 import { Eye } from "lucide-react"
 import Link from "next/link"
 import BusinessCarousel from "../carausel"
 import CustomButton from "@/components/ui/CustomButton"
-
+import axios from "axios"
+import { useRouter } from "next/navigation"
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+ 
 
 
 
 export default function Home() {
   const [showPassword, setShowPassword] = useState(false)
+  
+
+  const [email, setEmail] = useState("")
+const [password, setPassword] = useState("")
+ 
+const router = useRouter()
+const url = process.env.NEXT_PUBLIC_BACKEND_URL+"/api/v1/users"
+
+const submitSignIn = async ( ) => {
+
+  console.log("url is ", url)
+  
+  if(!email.trim() || !password.trim()) {
+    toast.error("Please fill all the fields")
+    return;
+  }
+    
+  // Email validation with regex
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!emailRegex.test(email)) {
+    toast.error("Please enter a valid email address");
+    return;
+  }
+
+  try {
+    const response = await axios.post(url+'/login', {
+      email: email,
+      password: password
+    })
+    
+    console.log(response.data.data)
+    
+    // Check if signin was successful
+    if (response.status === 200 || response.status === 201) {
+      // Store token if available
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+      
+      Cookies.set("accessToken", response.data.data.accessToken, { expires: 7, path: "/" });
+      Cookies.set("refreshToken", response.data.data.refreshToken, { expires: 7, path: "/" });
+      // Show success message
+      toast.success('Signed in successfully!');
+      
+      // Redirect to dashboard after a brief delay
+      setTimeout(() => {
+        router.push('/')
+      }, 1500);
+    }
+  } catch (error) {
+    console.error("Signin failed:", error)
+    
+    // Handle specific error status codes
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.status === 401) {
+        toast.error("Invalid email or password")
+      } else if (error.response.status === 404) {
+        toast.error("Account not found")
+      } else {
+        toast.error("Signin failed. Please try again.")
+      }
+    } else {
+      toast.error("Network error. Please check your connection.")
+    }
+  }
+}
+const googleAuth = async () => {
+  window.location.href = url+"/auth/google";
+};
+
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       {/* Left side - Blue section */}
       <div className="bg-primary text-white md:w-1/2 p-8 md:flex hidden flex-col items-center justify-center text-center">
       <BusinessCarousel/>
@@ -28,7 +115,9 @@ export default function Home() {
 
           {/* Social login buttons */}
           <div className="grid gap-4 mb-6">
-            <button className="flex items-center justify-center border border-gray-300 rounded-md p-3 hover:bg-gray-50 transition-colors">
+            <button 
+            onClick={googleAuth}
+            className="flex items-center justify-center border border-gray-300 rounded-md p-3 hover:bg-gray-50 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="mr-2">
                 <path
                   fill="#4285F4"
@@ -63,6 +152,7 @@ export default function Home() {
           <form className="space-y-4">
             <div>
               <input
+                onChange={(e) => setEmail(e.target.value)}
                 type="text"
                 placeholder="Email or username"
                 className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -71,6 +161,7 @@ export default function Home() {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -99,7 +190,9 @@ export default function Home() {
               </Link>
             </div>
          
-            <CustomButton  text="Sign In"  className="w-full text-center justify-center"/>
+            <CustomButton 
+            onClick={ submitSignIn }
+            text="Sign In"  className="w-full text-center justify-center"/>
 {/* 
             <button
               type="submit"

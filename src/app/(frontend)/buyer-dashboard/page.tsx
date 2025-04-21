@@ -1,6 +1,6 @@
 "use client";
 
-import Navbar from "@/components/dashboard/Navbar";
+import Navbar from './Navbar';
 import React, { useState } from "react";
 import Image from "next/image";
 

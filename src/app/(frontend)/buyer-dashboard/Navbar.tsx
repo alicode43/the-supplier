@@ -1,50 +1,57 @@
-
 // import React, { useState } from "react";
-import {
-  Bell,
-  UserCircle,
-  ChevronDown,
-  Search,
- 
-  Globe,
-} from "lucide-react";
+import { Bell, UserCircle, ChevronDown, Search, Globe } from "lucide-react";
+import Link from "next/link";
 
 export default function Navbar() {
-
-
   return (
     <header className="w-full bg-sky-600 border-b border-white/10">
       <div className="flex justify-between items-center px-4 sm:px-14 py-5 h-20">
         {/* Left Section */}
- 
-        <a href="" className="md:flex w-56 h-14  hidden items-center space-x-3 rtl:space-x-reverse">
-        <h1 className=" self-center text-2xl font-semibold whitespace-nowrap  text-white">TheSuplier</h1>
-      </a>
 
-          {/* Mobile Search */}
-          <div className="sm:hidden flex items-center gap-2 bg-white px-3 py-1.5 rounded-full shadow text-sm text-gray-600">
-            <Search size={16} />
-            <span className="text-sm font-['Nunito_Sans']">Search</span>
-          </div>
+        <a
+          href=""
+          className="md:flex w-56 h-14  hidden items-center space-x-3 rtl:space-x-reverse"
+        >
+          <Link
+            href="/buyer-dashboard"
+            className="md:flex w-56 h-14 hidden items-center space-x-3 rtl:space-x-reverse"
+          >
+            <h1 className="self-center text-2xl font-semibold whitespace-nowrap text-white">
+              TheSuplier
+            </h1>
+          </Link>
+        </a>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden sm:flex w-/5 mx-auto  items-center gap-4 ">
-            {["Dashboard", "Get a Quote", "Available Leads", "Profile"].map((item) => (
-              <div
-                key={item}
-                className="px-2.5 py-1 rounded-lg text-white text-sm font-medium font-['Inter'] hover:bg-sky-500 cursor-pointer transition"
-              >
-                {item}
-              </div>
-            ))}
-          </nav>
+        {/* Mobile Search */}
+        <div className="sm:hidden flex items-center gap-2 bg-white px-3 py-1.5 rounded-full shadow text-sm text-gray-600">
+          <Search size={16} />
+          <span className="text-sm font-['Nunito_Sans']">Search</span>
+        </div>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden sm:flex w-/5 mx-auto items-center gap-4">
+          {[
+            { name: "Dashboard", path: "/buyer-dashboard" },
+            { name: "Get a Quote", path: "/buyer-dashboard/get-quote" },
+            { name: "Available Leads", path: "/buyer-dashboard/leads" },
+            { name: "Profile", path: "/buyer-dashboard/profile" },
+          ].map((item) => (
+            <Link
+              key={item.name}
+              href={item.path}
+              className="px-2.5 py-1 rounded-lg text-white text-sm font-medium font-['Inter'] hover:bg-sky-500 cursor-pointer transition"
+            >
+              {item.name}
+            </Link>
+          ))}
+        </nav>
 
         {/* Right Section */}
         <div className="relative flex items-center gap-5 sm:gap-7">
           {/* Notification Icon */}
           <div className="relative">
             <button
-            //   onClick={() => setShowNotifications((prev) => !prev)}
+              //   onClick={() => setShowNotifications((prev) => !prev)}
               className="text-white"
             >
               <Bell size={20} />
@@ -73,7 +80,7 @@ export default function Navbar() {
           {/* Profile Icon */}
           <div className="relative">
             <button
-            //   onClick={() => setShowProfile((prev) => !prev)}
+              //   onClick={() => setShowProfile((prev) => !prev)}
               className="flex items-center gap-2 text-white"
             >
               <UserCircle size={28} />
@@ -93,7 +100,6 @@ export default function Navbar() {
           </div>
 
           {/* Avatar (mobile) */}
-   
         </div>
       </div>
     </header>
