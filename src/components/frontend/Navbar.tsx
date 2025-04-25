@@ -92,22 +92,38 @@ const Navbar: React.FC = () => {
             <a href="#" className="block py-2 px-3 bg-blue-700 rounded-sm md:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full" aria-current="page">Home</a>
           </li>
           <li>
-            <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">About</a>
-          </li>
-          <li>
-            <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Services</a>
-          </li>
-          <li>
             <a href="/how-it-work" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">How it works</a>
           </li>
+ 
+          <li className="relative group">
+  <a href="#" className="py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300 flex items-center">
+    Services
+    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </a>
+  <div className="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-20 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
+    <div className="absolute h-2 w-full top-[-8px]"></div>
+    <Link href="/cnc-machining">
+      <span className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">CNC Machining</span>
+    </Link>
+    <Link href="/die-casting">
+      <span className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Die Casting</span>
+    </Link>
+    <Link href="/forging-parts">
+      <span className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Forging Parts</span>
+    </Link>
+  </div>
+</li>
           <li>
-            <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Supplier Network</a>
+            <a href="/become-supplier" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Become A Supplierk</a>
+          </li>
+    
+          <li>
+            <a href="contact-us" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Contact</a>
           </li>
           <li>
-            <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Quality</a>
-          </li>
-          <li>
-            <a href="#" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Contact</a>
+            <a href="delivery" className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300">Delivery </a>
           </li>
         </ul>
       </div>
