@@ -32,6 +32,7 @@ function Feature({
   buttonIcon = buttonIcon || ArrowRight;
   direction = direction || "row";
   isButton = isButton || false;
+  console.log(direction)
 
   // "row" or "row-reverse"
   return (

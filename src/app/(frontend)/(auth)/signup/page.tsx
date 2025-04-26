@@ -24,6 +24,7 @@ export default function Home() {
 
   // const 
   const googleAuth = async () => {
+    console.log("url is ",process.env.NEXT_PUBLIC_BACKEND_URL)
     window.location.href = url+"/auth/google";
   };
 

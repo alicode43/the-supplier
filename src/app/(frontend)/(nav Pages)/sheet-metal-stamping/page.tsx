@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Navbar from "@/components/frontend/Navbar";
 import HeroInput from "@/components/frontend/HeroInput";
-import Feature from "@/components/frontend/Feature";
+ 
 import DrawingShowCase from "@/components/frontend/DrawingShowCase";
 import Footer from "@/components/frontend/Footer";
 import AboutJob from "@/components/frontend/aboutJob"; // Ensure this path is correct
@@ -98,34 +98,34 @@ function Page() {
 
   // Custom description for Die Casting
   const dieCastingDescription = (
-    <>
-      <span className="text-white font-bold">
-        High-Precision Manufacturing:
-      </span>{" "}
-      Our advanced die casting process delivers exceptional precision and
-      intricate detail, ensuring components meet exact functional
-      specifications.
-      <br />
-      <span className="text-white font-bold">Material Expertise: </span>
-      We work with premium aluminum, zinc, magnesium, and copper alloys to
-      create customized solutions perfectly tailored to your application
-      requirements.
-      <br />
-      <span className="text-white font-bold">
-        Superior Surface Finishing:
-      </span>{" "}
-      All components undergo comprehensive refinement through state-of-the-art
-      CNC machining, shot-blasting, texturing, plating, and painting processes
-      to achieve flawless surface quality.
-    </>
-  );
+    <div className="self-stretch flex flex-col space-y-2 md:space-y-3 text-white">
+     
+    <ul className="pl-5 space-y-1 sm:space-y-2 list-disc">
+      <li className="font-['Inter'] text-sm sm:text-base md:text-lg leading-tight">
+        Steel, Aluminum and All Other Ferrous and Non Ferrous
+      </li>
+      <li className="font-['Inter'] text-sm sm:text-base md:text-lg leading-tight">
+        Prototype 1 Pcs to Large Order Quantity
+      </li>
+      <li className="font-['Inter'] text-sm sm:text-base md:text-lg leading-tight">
+        Inspection Report and Certification
+      </li>
+      <li className="font-['Inter'] text-sm sm:text-base md:text-lg leading-tight">
+        As fast as 3 Days Delivery
+      </li>
+      <li className="font-['Inter'] text-sm sm:text-base md:text-lg leading-tight">
+        All Types of Post-Processing In CNC Machining
+      </li>
+    </ul>
+    </div>
+      );
 
   return (
     <div>
       <Navbar />
       <HeroInput
-        title="Die Casting Excellence"
-        subtitle="Premium Forging"
+        title=" Sheet Metal Stamping"
+        subtitle="CNC Machining"
         description={dieCastingDescription}
         uploadTitle="Upload Your CAD Files"
         dragDropText="Drag & drop your design files here, or"
@@ -135,28 +135,7 @@ function Page() {
         maxFileSize={100}
         fileSizeText="Maximum file size: {maxFileSize}MB. Contact our team for larger files."
       />
-      <Feature
-        img="/features.png"
-        isButton={false}
-        subTitle=""
-        title="Reliable Precision Online CNC Machining Services
-"
-        direction="row-reverse"
-        description="At our CNC machining facility, precision is more than just a promise—it's our standard. Our online CNC machining services are designed to deliver unparalleled accuracy and quality, ensuring that your projects meet the highest standards of excellence. From prototyping to production runs, our advanced CNC machining technology enables us to bring your designs to life with unmatched precision and efficiency. Whether you require intricate parts or complex components, our team of skilled technicians is dedicated to providing reliable and cost-effective CNC machining solutions tailored to your specific needs. With our seamless online platform, you can easily upload your designs, track the progress of your project, and receive timely updates every step of the way. Experience the difference that precision CNC machining can make for your next project—partner with us today.
-"
-      />
-      <Feature
-        img="/features.png"
-        isButton={false}
-        subTitle=""
-        title="What is CNC Machining"
-        direction="row"
-        description="CNC machining, or Computer Numerical Control machining, revolutionizes modern manufacturing by employing automated, high-speed cutting tools to shape raw metal or plastic stock with precision and efficiency. With machines including 3-axis, 4-axis, and 5-axis milling machines, lathes, and routers, CNC machining adapts to diverse manufacturing needs. Skilled machinists program tool paths based on CAD models, ensuring seamless alignment between design specifications and the final product. CNC machining’s versatility enables the creation of precise components vital across industries like aerospace, medical, robotics, electronics, and industrial sectors.
-
-
-Companies like TheSupplier lead the way in providing CNC machining services, offering an extensive range of materials from standard aluminum and acetal to advanced titanium and engineered plastics like PEEK and Teflon. With over 40 materials available, TheSupplier ensures each project receives the best-suited materials. CNC machining’s precision, adaptability, and efficiency continue to shape the future of production, driving innovation across industries and setting new standards for manufacturing excellence.
-"
-      />
+ 
 
 <DrawingShowCase />
 
@@ -168,6 +147,47 @@ Companies like TheSupplier lead the way in providing CNC machining services, off
   </div>
   <AboutJob items={serviceItems} />
 </section>
+<section className="w-full py-8 md:py-14 lg:py-16 px-4 sm:px-8 md:px-12 lg:px-16 bg-white">
+  <div className="max-w-7xl mx-auto">
+    <div className="flex flex-col lg:flex-row items-start gap-6 md:gap-8 lg:gap-12">
+      {/* Text content */}
+      <div className="w-full lg:w-2/3 flex flex-col gap-4 md:gap-6">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-neutral-950 font-['Inter'] leading-tight">
+          5 Types of Dies used in Sheet Metal Die Stamping
+        </h2>
+        <p className="text-base md:text-lg text-neutral-500 font-normal font-['Inter'] leading-relaxed mb-4">
+          A die is a specialised tool used in various industries to cut, shape, or form materials such as metal, 
+          plastic, and paper with precision. Understanding the different types of dies is essential for those 
+          involved in manufacturing, crafting, or design, as they play a crucial role in creating precise 
+          components and products.
+        </p>
+        
+     
+      </div>
+
+      {/* Image with hover effect */}
+      <div className="w-full lg:w-1/3 mt-6 lg:mt-0">
+        <div className="relative overflow-hidden rounded-lg shadow-md transition-transform duration-300 
+                      hover:shadow-xl transform hover:scale-[1.02] cursor-pointer
+                      group aspect-[4/3] w-full">
+          <img 
+            src="/features.png" 
+            alt="Sheet Metal Die Stamping" 
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+            <p className="text-white p-4 text-sm md:text-base font-medium">
+              Modern die stamping equipment in action
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
 <BottomCTA
   title="Seamless Forging Solutions: Place Your Order Today, Receive Precision Manufacture in Your TIME!"
   description=""

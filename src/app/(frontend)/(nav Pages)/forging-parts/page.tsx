@@ -120,12 +120,8 @@ function ForgingPartsPage() {
   return (
     <div>
       <Navbar />
-      <section className="w-full py-8 md:py-12 lg:py-16">
-        <div className="container mx-auto">
-          <h1 className="w-full text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold font-['Inter'] leading-tight md:leading-snug lg:leading-[1.15] text-neutral-950 max-w-5xl mx-auto">
-            TheSupplier – Metal Parts Marketplace!
-          </h1>
-        </div>
+      <section className="w-full py-8 md:py-0 md:pb-12 lg:pb-16">
+
         
       <HeroInput
         title="Forging Excellence"
