@@ -13,12 +13,13 @@ import 'react-toastify/dist/ReactToastify.css'
 
 
 
-export default function Home() {
+export default function Signup() {
   const [showPassword, setShowPassword] = useState(false)
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [role, setRole] = useState("buyer") 
   const router = useRouter()
   const url = process.env.NEXT_PUBLIC_BACKEND_URL+"/api/v1/users"
 
@@ -49,7 +50,8 @@ export default function Home() {
       const response = await axios.post(url+"/register", {
         name: firstName + " " + lastName,
         email: email,
-        password: password
+        password: password,
+        role: role 
       })
       
       console.log(response)
@@ -177,11 +179,28 @@ export default function Home() {
             <div>
               <input
                 type="text"
-                placeholder="Email or username"
+                placeholder="Email "
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+            <div>
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+                Select Role
+              </label>
+              <select
+                id="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="buyer">Buyer</option>
+                <option value="supplier">Supplier</option>
+                
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -196,6 +215,8 @@ export default function Home() {
               >
                 <Eye size={20} />
               </button>
+              
+
             </div>
 
             <div className="flex items-center justify-between">

@@ -46,7 +46,8 @@ const submitSignIn = async ( ) => {
       password: password
     })
     
-    console.log(response.data.data)
+    // console.log(response.data.data.user.role)
+    const role = response.data.data.user.role;
     
     // Check if signin was successful
     if (response.status === 200 || response.status === 201) {
@@ -59,10 +60,19 @@ const submitSignIn = async ( ) => {
       Cookies.set("refreshToken", response.data.data.refreshToken, { expires: 7, path: "/" });
       // Show success message
       toast.success('Signed in successfully!');
+      console.log("Signed in successfully!", role )
       
       // Redirect to dashboard after a brief delay
       setTimeout(() => {
-        router.push('/')
+        if (role === "admin") {
+
+          router.push('/admin')
+        } else if (role === "supplier") {
+          router.push('/supplier-dashboard')
+        }  else {
+          router.push('/')
+        }
+      
       }, 1500);
     }
   } catch (error) {
