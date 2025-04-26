@@ -4,10 +4,21 @@ import { useState, useEffect } from "react";
 import { Eye, Edit, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 
 export default function Offer() {
-  const [offers, setOffers] = useState([]);
-  const [filteredOffers, setFilteredOffers] = useState([]);
+  interface Offer {
+    id: string;
+    leadId: string;
+    supplier: string;
+    askingPrice: string;
+    askingTime: string;
+    status: string;
+    submitDate: string;
+    notes: string;
+  }
+
+  const [offers, setOffers] = useState<Offer[]>([]);
+  const [filteredOffers, setFilteredOffers] = useState<Offer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortField, setSortField] = useState(null);
+  const [sortField, setSortField] = useState<keyof Offer | null>(null);
   const [sortDirection, setSortDirection] = useState("asc");
   
   // Sample data for demonstration
@@ -75,7 +86,7 @@ export default function Offer() {
   }, []);
 
   // Handle sorting
-  const handleSort = (field) => {
+  const handleSort = (field: keyof Offer) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -98,19 +109,19 @@ export default function Offer() {
   };
 
   // View notes for an offer
-  const handleViewNotes = (id, notes) => {
+  const handleViewNotes = (id: string, notes: string) => {
     // In a real app, this might open a modal or navigate to a details page
     alert(`Notes for offer #${id}: ${notes}`);
   };
 
   // Edit offer
-  const handleEditOffer = (id) => {
+  const handleEditOffer = (id: string) => {
     // In a real app, this would navigate to edit form or open a modal
     alert(`Edit offer #${id}`);
   };
 
   // Delete offer
-  const handleDeleteOffer = (id) => {
+  const handleDeleteOffer = (id:string) => {
     // In a real app, this would call an API endpoint
     if (confirm(`Are you sure you want to delete offer #${id}?`)) {
       setOffers(offers.filter(offer => offer.id !== id));
@@ -119,7 +130,7 @@ export default function Offer() {
   };
 
   // Render status badge based on status
-  const renderStatusBadge = (status) => {
+  const renderStatusBadge = (status: string) => {
     switch(status.toLowerCase()) {
       case 'approved':
         return (
@@ -151,7 +162,8 @@ export default function Offer() {
     <div className="self-stretch px-5 py-2.5 flex flex-col gap-2.5">
       {/* Header */}
       <div className="flex flex-col gap-2.5 overflow-hidden">
-        <h1 className="text-neutral-800 text-3xl font-bold font-['Nunito_Sans']">Offers Management</h1>
+        <h1 className="text-neutral-800 text-3xl font-bold 
+        ">Offers Management</h1>
       </div>
       
       {/* Divider */}
@@ -169,7 +181,7 @@ export default function Offer() {
         <div className="bg-white rounded-2xl shadow-sm">
           {isLoading ? (
             <div className="py-20 text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-sky-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid  border-sky-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
               <p className="mt-4 text-gray-600">Loading offers...</p>
             </div>
           ) : (
@@ -177,15 +189,15 @@ export default function Offer() {
               <thead>
                 <tr>
                   {[
-                    { id: "id", label: "OFFER ID", sortable: true },
-                    { id: "leadId", label: "NAME", sortable: true },
-                    { id: "supplier", label: "SUPPLIER", sortable: true },
-                    { id: "askingPrice", label: "ASKING PRICE", sortable: true },
-                    { id: "askingTime", label: "ASKING TIME", sortable: true },
-                    { id: "status", label: "STATUS", sortable: true },
-                    { id: "submitDate", label: "SUBMIT DATE", sortable: true },
-                    { id: "notes", label: "NOTES", sortable: false },
-                    { id: "actions", label: "ACTION", sortable: false }
+                    { id: "id" as keyof Offer, label: "OFFER ID", sortable: true },
+                    { id: "leadId" as keyof Offer, label: "NAME", sortable: true },
+                    { id: "supplier" as keyof Offer, label: "SUPPLIER", sortable: true },
+                    { id: "askingPrice" as keyof Offer, label: "ASKING PRICE", sortable: true },
+                    { id: "askingTime" as keyof Offer, label: "ASKING TIME", sortable: true },
+                    { id: "status" as keyof Offer, label: "STATUS", sortable: true },
+                    { id: "submitDate" as keyof Offer, label: "SUBMIT DATE", sortable: true },
+                    { id: "notes" as keyof Offer, label: "NOTES", sortable: false },
+                    { id: "actions" as keyof Offer, label: "ACTION", sortable: false }
                   ].map(column => (
                     <th 
                       key={column.id} 

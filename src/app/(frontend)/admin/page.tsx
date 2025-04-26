@@ -1,11 +1,15 @@
 'use client';
+import { useAdminContext } from '@/context/AdminContex'; // Note: Fix this import path if needed
 import Dashboard from '@/components/dashboard/AdminDashboard';
 import AdminLeads from '@/components/dashboard/AminLeads';
 import Offer from '@/components/dashboard/Offer';
 import UserManagement from '@/components/dashboard/UserManagement';
 
-function Page({ activeComponent = 'dashboard' }) {  
-  // Render the appropriate component based on passed prop
+function Page() {  
+  // Use context instead of props
+  const { activeComponent } = useAdminContext();
+  
+  // Render the appropriate component based on context
   const renderComponent = () => {
     switch (activeComponent) {
       case 'dashboard':

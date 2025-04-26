@@ -1,24 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Cookies from "js-cookie";
+import { useAdminContext } from "@/context/AdminContex";
 import {
   LayoutDashboard,
   Users,
   FileText,
-  UserCog,
   Settings,
   LogOut,
   ChevronLeft,
-  ChevronRight,
-  Menu
+  ChevronRight
 } from "lucide-react";
 
-export default function Sidebar({ mobileOpen, setMobileOpen, activeComponent, setActiveComponent }) {
+interface SidebarProps {
+  mobileOpen: boolean;
+  setMobileOpen: (open: boolean) => void;
+}
+
+export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const { activeComponent, setActiveComponent } = useAdminContext();
 
   const menuItems = [
     {
@@ -49,11 +53,11 @@ export default function Sidebar({ mobileOpen, setMobileOpen, activeComponent, se
     },
   ];
 
-  const isActive = (id) => {
+  const isActive = (id: string) => {
     return activeComponent === id;
   };
 
-  const handleItemClick = (id) => {
+  const handleItemClick = (id: string) => {
     setActiveComponent(id);
     if (window.innerWidth < 768) {
       setMobileOpen(false);
@@ -61,13 +65,12 @@ export default function Sidebar({ mobileOpen, setMobileOpen, activeComponent, se
   };
 
   const handleLogout = () => {
-    // Remove cookies or tokens
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
-    // Redirect to login
     router.push("/signin");
   };
 
+  // Rest of your component remains the same
   return (
     <>
       {/* Mobile overlay */}
@@ -114,7 +117,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen, activeComponent, se
             return (
               <div key={item.name} className={`${collapsed ? "w-full" : "w-full"} px-2.5 flex flex-col justify-start items-start`}>
                 <button 
-                  onClick={() => handleItemClick(item.id)}
+                  onClick={() => item.id && handleItemClick(item.id)}
                   className={`w-full px-3 py-3 rounded-[10px] flex items-center gap-4
                             ${isActive(item.id) 
                               ? "bg-blue-500/20 text-blue-500" 
@@ -134,7 +137,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen, activeComponent, se
             );
           })}
           
-          {/* Logout - separate from navigation links */}
+          {/* Logout */}
           <div className={`${collapsed ? "w-full" : "w-full"} px-2.5 flex flex-col justify-start items-start`}>
             <button 
               onClick={handleLogout}

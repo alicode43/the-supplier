@@ -5,10 +5,20 @@ import { Edit, Trash2, FilterX, ChevronDown, ChevronUp, Search } from "lucide-re
 
 export default function UserManagement() {
   // State for users and filters
-  const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  interface User {
+    id: string;
+    name: string;
+    email: string;
+    userType: string;
+    company: string;
+    joinDate: string;
+    status: string;
+  }
+
+  const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortField, setSortField] = useState(null);
+  const [sortField, setSortField] = useState<keyof User | null>(null);
   const [sortDirection, setSortDirection] = useState("asc");
   
   // Filter states
@@ -103,8 +113,8 @@ export default function UserManagement() {
     // Apply sorting
     if (sortField) {
       results = [...results].sort((a, b) => {
-        const aValue = a[sortField]?.toString().toLowerCase() || "";
-        const bValue = b[sortField]?.toString().toLowerCase() || "";
+        const aValue = (a[sortField!] as string)?.toLowerCase() || "";
+        const bValue = (b[sortField!] as string)?.toLowerCase() || "";
         
         if (sortDirection === "asc") {
           return aValue > bValue ? 1 : -1;
@@ -118,7 +128,7 @@ export default function UserManagement() {
   }, [users, userType, userStatus, joinDateRange, searchTerm, sortField, sortDirection]);
 
   // Handle sorting
-  const handleSort = (field) => {
+  const handleSort = (field: keyof User) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -136,13 +146,13 @@ export default function UserManagement() {
   };
 
   // Edit user
-  const handleEditUser = (id) => {
+  const handleEditUser = (id: string) => {
     // In a real app, this would navigate to an edit form
     alert(`Edit user with ID: ${id}`);
   };
 
   // Delete user
-  const handleDeleteUser = (id) => {
+  const handleDeleteUser = (id:string) => {
     // In a real app, this would call an API endpoint
     if (confirm(`Are you sure you want to delete user with ID: ${id}?`)) {
       const updatedUsers = users.filter(user => user.id !== id);
@@ -152,7 +162,7 @@ export default function UserManagement() {
   };
 
   // Render user type badge based on type
-  const renderUserTypeBadge = (type) => {
+  const renderUserTypeBadge = (type: string) => {
     switch(type.toLowerCase()) {
       case 'supplier':
         return (
@@ -181,7 +191,7 @@ export default function UserManagement() {
   };
 
   // Render status badge
-  const renderStatusBadge = (status) => {
+  const renderStatusBadge = (status: string) => {
     switch(status.toLowerCase()) {
       case 'active':
         return (
@@ -314,7 +324,7 @@ export default function UserManagement() {
                     <th 
                       key={column.id} 
                       className={`px-8 py-5 text-left text-sm font-extrabold text-black/90 uppercase ${column.sortable ? 'cursor-pointer' : ''}`}
-                      onClick={() => column.sortable && handleSort(column.id)}
+                      onClick={() => column.sortable && handleSort(column.id as keyof User)}
                     >
                       <div className="flex items-center">
                         {column.label}

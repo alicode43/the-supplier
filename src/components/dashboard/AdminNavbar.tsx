@@ -13,7 +13,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   // const [isSearchFocused, setIsSearchFocused] = useState(false);
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     console.log("Searching for:", searchQuery);
     // Implement your search logic here

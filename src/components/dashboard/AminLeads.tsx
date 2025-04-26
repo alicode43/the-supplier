@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { File, Trash2, Eye, FilterX, ChevronDown, ChevronUp } from "lucide-react";
+import {   Trash2, Eye, FilterX, ChevronDown, ChevronUp } from "lucide-react";
 
 export default function AdminLeads() {
   // State for filters and leads data
@@ -9,10 +9,34 @@ export default function AdminLeads() {
   const [orderStatus, setOrderStatus] = useState("");
   const [dateRange, setDateRange] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [leads, setLeads] = useState([]);
-  const [filteredLeads, setFilteredLeads] = useState([]);
+  const [leads, setLeads] = useState<Array<{
+    id: string;
+    partName: string;
+    drawingFile: string;
+    category: string;
+    quantity: string;
+    futureRequirement: string;
+    targetPrice: string;
+    leadTime: string;
+    productionNotes: string;
+    submitDate: string;
+    offerFile: string;
+  }>>([]);
+  const [filteredLeads, setFilteredLeads] = useState<Array<{
+    id: string;
+    partName: string;
+    drawingFile: string;
+    category: string;
+    quantity: string;
+    futureRequirement: string;
+    targetPrice: string;
+    leadTime: string;
+    productionNotes: string;
+    submitDate: string;
+    offerFile: string;
+  }>>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortField, setSortField] = useState(null);
+  const [sortField, setSortField] = useState<keyof typeof mockLeads[0] | null>(null);
   const [sortDirection, setSortDirection] = useState("asc");
 
   // Sample data for demonstration
@@ -110,7 +134,21 @@ export default function AdminLeads() {
   }, [leads, orderType, orderStatus, dateRange, searchTerm, sortField, sortDirection]);
 
   // Handle sorting
-  const handleSort = (field) => {
+  interface Lead {
+    id: string;
+    partName: string;
+    drawingFile: string;
+    category: string;
+    quantity: string;
+    futureRequirement: string;
+    targetPrice: string;
+    leadTime: string;
+    productionNotes: string;
+    submitDate: string;
+    offerFile: string;
+  }
+
+  const handleSort = (field: keyof Lead) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -130,13 +168,17 @@ export default function AdminLeads() {
   };
 
   // Handle file view
-  const handleViewFile = (fileType, fileId) => {
+  interface ViewFileHandler {
+    (fileType: 'drawing' | 'notes' | 'offer', fileId: string): void;
+  }
+
+  const handleViewFile: ViewFileHandler = (fileType, fileId) => {
     // In a real app, this would open the file or a modal
     alert(`Viewing ${fileType} for lead ${fileId}`);
   };
 
   // Handle lead deletion
-  const handleDeleteLead = (id) => {
+  const handleDeleteLead = (id: string) => {
     // In a real app, this would call an API endpoint
     if (confirm(`Are you sure you want to delete lead ${id}?`)) {
       setLeads(leads.filter(lead => lead.id !== id));
@@ -148,7 +190,7 @@ export default function AdminLeads() {
     <div className="self-stretch px-5 py-4 flex flex-col gap-4">
       {/* Header */}
       <div className="flex flex-col gap-2.5 overflow-hidden">
-        <h1 className="text-neutral-800 text-3xl font-bold font-['Nunito_Sans']">Leads Management</h1>
+        <h1 className="text-neutral-800 text-3xl font-bold  ">Leads Management</h1>
       </div>
       
       {/* Filters */}
@@ -214,7 +256,7 @@ export default function AdminLeads() {
       {/* Reset Filters */}
       <div className="flex items-center gap-2 cursor-pointer" onClick={resetFilters}>
         <FilterX size={16} className="text-rose-600" />
-        <span className="text-rose-600 text-sm font-semibold font-['Nunito_Sans']">Reset Filter</span>
+        <span className="text-rose-600 text-sm font-semibold  ">Reset Filter</span>
       </div>
       
       {/* Filter Section Labels (hidden on small screens) */}
@@ -247,18 +289,18 @@ export default function AdminLeads() {
               <thead>
                 <tr>
                   {[
-                    { id: "id", label: "LEAD ID", sortable: true },
-                    { id: "partName", label: "PART NAME", sortable: true },
-                    { id: "drawingFile", label: "DRAWING FILE", sortable: false },
-                    { id: "category", label: "CATEGORY", sortable: true },
-                    { id: "quantity", label: "QUANTITY", sortable: true },
-                    { id: "futureRequirement", label: "FUTURE REQUIREMENT", sortable: true },
-                    { id: "targetPrice", label: "TARGET PRICE/PCS", sortable: true },
-                    { id: "leadTime", label: "LEAD TIME", sortable: true },
-                    { id: "productionNotes", label: "PRODUCTION NOTES", sortable: false },
-                    { id: "submitDate", label: "SUBMIT DATE", sortable: true },
-                    { id: "offerFile", label: "OFFER", sortable: false },
-                    { id: "actions", label: "DELETE", sortable: false }
+                    { id: "id" as keyof Lead, label: "LEAD ID", sortable: true },
+                    { id: "partName" as keyof Lead, label: "PART NAME", sortable: true },
+                    { id: "drawingFile" as keyof Lead, label: "DRAWING FILE", sortable: false },
+                    { id: "category" as keyof Lead, label: "CATEGORY", sortable: true },
+                    { id: "quantity" as keyof Lead, label: "QUANTITY", sortable: true },
+                    { id: "futureRequirement" as keyof Lead, label: "FUTURE REQUIREMENT", sortable: true },
+                    { id: "targetPrice" as keyof Lead, label: "TARGET PRICE/PCS", sortable: true },
+                    { id: "leadTime" as keyof Lead, label: "LEAD TIME", sortable: true },
+                    { id: "productionNotes" as keyof Lead, label: "PRODUCTION NOTES", sortable: false },
+                    { id: "submitDate" as keyof Lead, label: "SUBMIT DATE", sortable: true },
+                    { id: "offerFile" as keyof Lead, label: "OFFER", sortable: false },
+                    { id: "actions" as keyof Lead, label: "DELETE", sortable: false }
                   ].map(column => (
                     <th 
                       key={column.id} 

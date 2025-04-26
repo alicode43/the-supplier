@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { JSX, useState  } from 'react';
 import { 
   Users, FileText, 
   DollarSign, AlertCircle,
   TrendingUp, TrendingDown,
-  Search, Bell, ChevronDown
+ 
 } from 'lucide-react';
 import { 
   LineChart, Line, AreaChart, Area, PieChart, Pie, 
@@ -14,7 +14,7 @@ import {
 } from 'recharts';
 
 export default function Dashboard() {
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
   const [selectedPeriod, setSelectedPeriod] = useState("monthly");
 
   // Sample data for charts
@@ -47,12 +47,19 @@ export default function Dashboard() {
   ];
 
   // Stat cards data
-  const statCards = [
+  const statCards: { 
+    title: string; 
+    value: string; 
+    change: string; 
+    trend: "increase" | "decrease"; 
+    period: string; 
+    icon: JSX.Element; 
+  }[] = [
     {
       title: "Total User",
       value: "258",
       change: "+1.8%",
-      trend: "increase",
+      trend: "increase" as "increase" | "decrease",
       period: "Since last month",
       icon: <Users className="w-6 h-6 text-blue-500" />
     },
@@ -68,7 +75,7 @@ export default function Dashboard() {
       title: "Pending Offers",
       value: "18",
       change: "-3%",
-      trend: "decrease",
+      trend: "decrease" as "increase" | "decrease",
       period: "Since yesterday",
       icon: <AlertCircle className="w-6 h-6 text-amber-300" />
     },
@@ -88,7 +95,7 @@ export default function Dashboard() {
       <div className="px-5 py-2.5 flex flex-col gap-4">
         {/* Page title */}
         <div className="flex flex-col gap-2.5">
-          <h1 className="text-neutral-800 text-3xl font-bold font-['Nunito_Sans']">Dashboard</h1>
+          <h1 className="text-neutral-800 text-3xl font-bold ">Dashboard</h1>
           <div className="h-px opacity-60 bg-black/10"></div>
         </div>
 
@@ -234,7 +241,7 @@ export default function Dashboard() {
 }
 
 // Stat Card Component
-function StatCard({ title, value, change, trend, period, icon }) {
+function StatCard({ title, value, change, trend, period, icon }: { title: string; value: string; change: string; trend: "increase" | "decrease"; period: string; icon: JSX.Element }) {
   return (
     <div className="p-4 bg-white rounded-2xl">
       <div className="flex flex-col gap-6">
