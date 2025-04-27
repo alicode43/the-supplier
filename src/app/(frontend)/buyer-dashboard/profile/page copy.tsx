@@ -132,48 +132,62 @@ export default function Page() {
   const submitProfile = async () => {
     try {
       setIsEditing(false);
-      setIsUploading(true);
-  
+      setIsUploading(true); // Show loading state for form submission
+      
+      console.log("Submitting profile data with logo:", profile);
+      
+      // Use FormData to handle both text and file data
       const formData = new FormData();
-  
+      
+      // Add all profile fields
       Object.entries(profile).forEach(([key, value]) => {
-        if (typeof value === 'string' && value.trim() !== '') {
-          formData.append(key, value);
+        // Skip the logo as we'll add it separately if needed
+        if (key !== 'companyLogo') {
+          formData.append(`profile[${key}]`, value || '');
         }
       });
-  
+      
+      // Add the company logo from profile if no new one was selected
+      if (profile.companyLogo && !companyLogo) {
+        formData.append("profile[companyLogo]", profile.companyLogo);
+      }
+      
+      // Add new logo if available
       if (companyLogo) {
         formData.append("companyLogo", companyLogo);
       }
-  
-      // Check FormData
-  
-  
+      
+      // Make API request with authorization header
+      console.log("sending profile Data is:", profile);
       const response = await axios.post(
-        url + "registerBuyer",
-        // formData,
-        profile,
-        {
+        url + "registerBuyer", 
+        formData,
+        { 
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            // 'Content-Type': multipart/form-data will be automatically set by Axios
+            'Authorization': `Bearer ${accessToken}`
+            // Let Axios set the correct Content-Type with boundary
           }
         }
       );
-  
+      
       console.log("Profile update response:", response.data);
-  
+      
+      // Update with returned data if available
       if (response.data && response.data.data) {
         setProfile(response.data.data);
       }
-  
+      
+      // Clear temporary states
       setCompanyLogo(null);
       setLogoPreview(null);
-  
+      
       toast.success("Profile updated successfully!");
+      
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile");
+      
+      // Handle authentication errors
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         toast.error("Session expired. Please login again.");
         router.push('/signin');
@@ -182,7 +196,7 @@ export default function Page() {
       setIsUploading(false);
     }
   };
-  
+
   const handleChange = (field: keyof Profile, value: string) => {
     setProfile({ ...profile, [field]: value });
   };
