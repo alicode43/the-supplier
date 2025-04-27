@@ -19,12 +19,25 @@ interface SidebarProps {
   setMobileOpen: (open: boolean) => void;
 }
 
+// Define proper types for menu items
+type NavMenuItem = {
+  name: string;
+  id: string;
+  icon: React.ReactNode;
+};
+
+type DividerItem = {
+  divider: true;
+};
+
+type MenuItem = NavMenuItem | DividerItem;
+
 export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const { activeComponent, setActiveComponent } = useAdminContext();
 
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     {
       name: "Dashboard",
       id: "dashboard",
@@ -70,7 +83,6 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
     router.push("/signin");
   };
 
-  // Rest of your component remains the same
   return (
     <>
       {/* Mobile overlay */}
@@ -88,24 +100,20 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
                    ${collapsed ? "md:w-20" : "md:w-64"}
                    fixed md:relative`}
       >
-        {/* Toggle button (visible only on desktop) */}
+        {/* Toggle button */}
         <div className="hidden md:flex justify-end px-4 py-2">
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="p-1 rounded-full hover:bg-gray-100"
           >
-            {collapsed ? (
-              <ChevronRight size={20} />
-            ) : (
-              <ChevronLeft size={20} />
-            )}
+            {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
           </button>
         </div>
 
         {/* Navigation */}
         <div className="flex flex-col justify-start items-start gap-1 p-2">
           {menuItems.map((item, index) => {
-            if (item.divider) {
+            if ('divider' in item) {
               return (
                 <div 
                   key={`divider-${index}`} 
@@ -117,7 +125,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
             return (
               <div key={item.name} className={`${collapsed ? "w-full" : "w-full"} px-2.5 flex flex-col justify-start items-start`}>
                 <button 
-                  onClick={() => item.id && handleItemClick(item.id)}
+                  onClick={() => handleItemClick(item.id)}
                   className={`w-full px-3 py-3 rounded-[10px] flex items-center gap-4
                             ${isActive(item.id) 
                               ? "bg-blue-500/20 text-blue-500" 
