@@ -5,13 +5,15 @@ import AdminNavbar from "@/components/dashboard/AdminNavbar";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { AdminContextProvider } from "@/context/AdminContex";
 
-export default function AdminLayout({ children }) {
+import { ReactNode } from "react";
+
+export default function AdminLayout({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   
   return (
     <AdminContextProvider>
       <div className="min-h-screen bg-slate-100">
-        <AdminNavbar onMenuClick={() => setMobileOpen(true)} />
+        <AdminNavbar  />
         <div className="flex">
           <Sidebar 
             mobileOpen={mobileOpen} 
