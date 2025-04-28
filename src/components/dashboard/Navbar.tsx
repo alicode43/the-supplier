@@ -8,11 +8,20 @@ import {
    
     Globe,
   } from "lucide-react";
+import Link from "next/link";
   
+  const navItems = [
+    { name: "Dashboards", path: "/buyer-dashboard" },
+    { name: "Get a Quote", path: "/buyer-dashboard/get-quote" },
+    { name: "Available Leads", path: "/buyer-dashboard/leads" },
+    { name: "Profile", path: "/buyer-dashboard/profile" }
+  ];
+  import { usePathname } from "next/navigation";
+
   export default function Navbar() {
   
     
-  
+    const pathname = usePathname();
     return (
       <header className="w-full bg-sky-600 border-b border-white/10">
         <div className="flex justify-between items-center px-4 sm:px-14 py-5 h-20">
@@ -29,16 +38,19 @@ import {
             </div>
   
             {/* Desktop Navigation */}
-            <nav className="hidden sm:flex w-/5 mx-auto  items-center gap-4 ">
-              {["Dashboard", "Get a Quote", "Available Leads", "Profile"].map((item) => (
-                <div
-                  key={item}
-                  className="px-2.5 py-1 rounded-lg text-white text-sm font-medium font-['Inter'] hover:bg-sky-500 cursor-pointer transition"
-                >
-                  {item}
-                </div>
-              ))}
-            </nav>
+            <nav className="hidden sm:flex w-/5 mx-auto items-center gap-4">
+          {navItems.map((item) => (
+            <Link
+              key={item.name}
+              href={item.path}
+              className={`px-2.5 py-1 rounded-lg text-white text-sm font-medium font-['Inter'] hover:bg-sky-500 cursor-pointer transition ${
+                pathname === item.path ? "bg-sky-700" : ""
+              }`}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </nav>
   
           {/* Right Section */}
           <div className="relative flex items-center gap-5 sm:gap-7">
