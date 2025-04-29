@@ -1,13 +1,86 @@
 "use client";
 
 import Navbar from './Navbar';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import Cookies from "js-cookie";
+import axios from 'axios';
 
 export default function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10;
+  const accessToken = Cookies.get("accessToken")
+ 
+  interface Requirement {
+    leadId: string;
+    id: string;
+    partName: string;
+    category: string;
+    material: string;
+    quantity: number;
+    targetPrice: number;
+    leadTime: string;
+    createdAt: string;
+ 
+  }
+  
+  const [requirementsData, setRequirementsData] = useState<Requirement[]>([]);
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  // console.log(quotes," ",loading," ",error)
+  const url =process.env.NEXT_PUBLIC_BACKEND_URL
 
+  useEffect(() => {
+    // Check if user is authenticated
+    if (!accessToken) {
+      window.location.href = "/signin";
+    } else {
+      console.log("Access Token:", accessToken);
+      
+      // Define the function to fetch quotes
+      const fetchQuotes = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+          
+          // Make API request with authentication header
+          const response = await axios.get(
+            url+'/api/v1/supply/getAllQuotes',
+            {
+              headers: {
+                "Authorization": `Bearer ${accessToken}`,
+                "Content-Type": "application/json"
+              }
+            }
+          );
+          
+          console.log("Quotes response:", response.data.data);
+          
+          // Check if response is successful
+          if (response.data.success) {
+            // setQuotes(response.data.data);
+            setRequirementsData(response.data.data);
+          } else {
+            setError(response.data.message || "Failed to fetch quotes");
+          }
+        } catch (err) {
+          console.error("Error fetching quotes:", err);
+          
+          // Handle different error types
+          
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      // Call the fetch function
+      fetchQuotes();
+    }
+  }, [accessToken]);
+
+
+  
   const renderPageNumbers = () => {
     const pages = [];
 
@@ -48,7 +121,7 @@ export default function Page() {
           currentPage === page
             ? "bg-indigo-600 text-white"
             : "bg-white text-zinc-800 hover:bg-zinc-100"
-        } text-sm font-normal font-['Inter'] leading-tight border-r border-zinc-300 last:border-none`}
+        } text-sm font-normal   leading-tight border-r border-zinc-300 last:border-none`}
         disabled={page === "..."}
       >
         {page}
@@ -68,7 +141,7 @@ export default function Page() {
     <table className="min-w-max w-full table-auto border-collapse border border-zinc-200 rounded-lg">
       <thead>
         <tr className="bg-white">
-          <th className="text-left text-indigo-600 text-base font-normal font-['Inter'] leading-normal px-4 py-2">
+          <th className="text-left text-indigo-600 text-base font-normal leading-normal px-4 py-2">
             2 Commissaires contrôleurs
           </th>
           <th className="text-right px-4 py-2">
@@ -87,7 +160,7 @@ export default function Page() {
                     page === "1"
                       ? "bg-indigo-600 text-white"
                       : "bg-white text-zinc-800"
-                  } text-sm font-normal font-['Inter'] leading-tight border-r border-zinc-300 last:border-none`}
+                  } text-sm font-normal  leading-tight border-r border-zinc-300 last:border-none`}
                 >
                   {page}
                 </button>
@@ -146,10 +219,10 @@ export default function Page() {
             <div className="flex flex-col justify-start items-start gap-4">
               <div className="w-full flex justify-between items-start">
                 <div className="flex-1 flex flex-col gap-2.5">
-                  <div className="opacity-70 text-neutral-800 text-base font-semibold font-['Nunito_Sans']">
+                  <div className="opacity-70 text-neutral-800 text-base font-semibold  ">
                     Quotes Received
                   </div>
-                  <div className="text-neutral-800 text-3xl font-bold font-['Nunito_Sans'] tracking-wide">
+                  <div className="text-neutral-800 text-3xl font-bold   tracking-wide">
                     12
                   </div>
                 </div>
@@ -169,10 +242,10 @@ export default function Page() {
             <div className="flex flex-col justify-start items-start gap-4">
               <div className="w-full flex justify-between items-start">
                 <div className="flex-1 flex flex-col gap-2.5">
-                  <div className="opacity-70 text-neutral-800 text-base font-semibold font-['Nunito_Sans']">
+                  <div className="opacity-70 text-neutral-800 text-base font-semibold  ">
                     Pending Approvals
                   </div>
-                  <div className="text-neutral-800 text-3xl font-bold font-['Nunito_Sans'] tracking-wide">
+                  <div className="text-neutral-800 text-3xl font-bold   tracking-wide">
                     3
                   </div>
                 </div>
@@ -192,10 +265,10 @@ export default function Page() {
             <div className="flex flex-col justify-start items-start gap-4">
               <div className="w-full flex justify-between items-start">
                 <div className="flex-1 flex flex-col gap-2.5">
-                  <div className="opacity-70 text-neutral-800 text-base font-semibold font-['Nunito_Sans']">
+                  <div className="opacity-70 text-neutral-800 text-base font-semibold  ">
                     Completed Orders
                   </div>
-                  <div className="text-neutral-800 text-3xl font-bold font-['Nunito_Sans'] tracking-wide">
+                  <div className="text-neutral-800 text-3xl font-bold   tracking-wide">
                     8
                   </div>
                 </div>
@@ -232,91 +305,52 @@ export default function Page() {
                   <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
                     Part Name
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black font-['Nunito_Sans']">
+                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black  ">
                     Category
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black font-['Nunito_Sans']">
+                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black  ">
                     Material
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black font-['Nunito_Sans']">
+                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black  ">
                     Quantity
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black font-['Nunito_Sans']">
+                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black  ">
                     Your Price/Pcs
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black font-['Nunito_Sans']">
+                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black  ">
                     Your Lead Time
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black font-['Nunito_Sans']">
+                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black  ">
                     Submitted On
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black font-['Nunito_Sans']">
+                  <th className="px-4 py-3 text-left text-sm font-extrabold text-black  ">
                     Action
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 text-sm text-black font-semibold">
-                <tr>
-                  <td className="px-4 py-3">L1001</td>
-                  <td className="px-4 py-3">PCB Assembly</td>
-                  <td className="px-4 py-3">Electronics</td>
-                  <td className="px-4 py-3">FR4</td>
-                  <td className="px-4 py-3">500</td>
-                  <td className="px-4 py-3">₹25,000</td>
-                  <td className="px-4 py-3">15-Jan-2023</td>
-                  <td className="px-4 py-3">12-May-2023</td>
-                  <td className="px-4 py-3">
-                    <button className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1">
-                      View
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-3">L1003</td>
-                  <td className="px-4 py-3">Machined Shaft</td>
-                  <td className="px-4 py-3">Machining</td>
-                  <td className="px-4 py-3">Steel</td>
-                  <td className="px-4 py-3">800</td>
-                  <td className="px-4 py-3">₹1,25,000</td>
-                  <td className="px-4 py-3">22-Feb-2023</td>
-                  <td className="px-4 py-3">10-May-2023</td>
-                  <td className="px-4 py-3">
-                    <button className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1">
-                      View
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-3">L1004</td>
-                  <td className="px-4 py-3">Plastic Housing</td>
-                  <td className="px-4 py-3">Plastic Molding</td>
-                  <td className="px-4 py-3">ABS</td>
-                  <td className="px-4 py-3">3,000</td>
-                  <td className="px-4 py-3">₹74,000</td>
-                  <td className="px-4 py-3">10-Mar-2023</td>
-                  <td className="px-4 py-3">20-May-2023</td>
-                  <td className="px-4 py-3">
-                    <button className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1">
-                      View
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-3">L1002</td>
-                  <td className="px-4 py-3">Rubber Gasket</td>
-                  <td className="px-4 py-3">Molding</td>
-                  <td className="px-4 py-3">Silicone Rubber</td>
-                  <td className="px-4 py-3">5,000</td>
-                  <td className="px-4 py-3">₹55,000</td>
-                  <td className="px-4 py-3">05-Apr-2023</td>
-                  <td className="px-4 py-3">28-May-2023</td>
-                  <td className="px-4 py-3">
-                    <button className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1">
-                      View
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
+          <tbody className="divide-y divide-gray-200 text-sm text-black font-semibold">
+  {requirementsData.map((item) => (
+    <tr key={item.leadId}>
+      <td className="px-4 py-3">{item.leadId}</td>
+      <td className="px-4 py-3">{item.partName}</td>
+      <td className="px-4 py-3">{item.category}</td>
+      <td className="px-4 py-3">{item.material}</td>
+      <td className="px-4 py-3">{item.quantity}</td>
+      <td className="px-4 py-3">{item.targetPrice}</td>
+      <td className="px-4 py-3">{item.leadTime}</td>
+      <td className="px-4 py-3">{item.
+createdAt}</td>
+      <td className="px-4 py-3">
+        <button 
+          onClick={() => router.push(`/buyer-dashboard/view-requirement/${item.id}`)}
+          className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1 hover:bg-indigo-50"
+        >
+          View
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
             </table>
           </div>
         </section>
@@ -349,7 +383,7 @@ export default function Page() {
                     <th className="px-4 py-3">Action</th>
                   </tr>
                 </thead>
-                <tbody className="font-['Nunito_Sans']">
+                <tbody className=" ">
                   {[
                     {
                       offerId: "Q1001",

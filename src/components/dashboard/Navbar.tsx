@@ -11,10 +11,10 @@ import {
 import Link from "next/link";
   
   const navItems = [
-    { name: "Dashboards", path: "/buyer-dashboard" },
-    { name: "Get a Quote", path: "/buyer-dashboard/get-quote" },
-    { name: "Available Leads", path: "/buyer-dashboard/leads" },
-    { name: "Profile", path: "/buyer-dashboard/profile" }
+    { name: "Dashboards", path: "/supplier-dashboard" },
+    { name: "Available Leads", path: "/supplier-dashboard/leads" },
+    { name: "My Quote", path: "/supplier-dashboard/quotes" },
+    { name: "Profile", path: "/supplier-dashboard/profile" }
   ];
   import { usePathname } from "next/navigation";
 

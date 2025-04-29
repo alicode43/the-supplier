@@ -1,14 +1,72 @@
 "use client";
 
-import Navbar from '../Navbar';
+import Navbar from "../Navbar";
 import { ChevronDownIcon, Undo2Icon } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
- 
+import { useRouter } from 'next/navigation';
+
+// Define type for lead data
+type Lead = {
+  id: string;
+  partName: string;
+  category: string;
+  material: string;
+  quantity: number;
+  price: string;
+  leadTime: string;
+  submittedDate: string;
+};
+
+// Add this inside your Page component
+const leadsData: Lead[] = [
+  {
+    id: "L1001",
+    partName: "PCB Assembly",
+    category: "Electronics",
+    material: "FR4",
+    quantity: 500,
+    price: "₹25,000",
+    leadTime: "15-Jan-2023",
+    submittedDate: "12-May-2023",
+  },
+  {
+    id: "L1003",
+    partName: "Machined Shaft",
+    category: "Machining",
+    material: "Steel",
+    quantity: 800,
+    price: "₹1,25,000",
+    leadTime: "22-Feb-2023",
+    submittedDate: "10-May-2023",
+  },
+  {
+    id: "L1004",
+    partName: "Plastic Housing",
+    category: "Plastic Molding",
+    material: "ABS",
+    quantity: 3000,
+    price: "₹74,000",
+    leadTime: "10-Mar-2023",
+    submittedDate: "20-May-2023",
+  },
+  {
+    id: "L1002",
+    partName: "Rubber Gasket",
+    category: "Molding",
+    material: "Silicone Rubber",
+    quantity: 5000,
+    price: "₹55,000",
+    leadTime: "05-Apr-2023",
+    submittedDate: "28-May-2023",
+  },
+];
+
 export default function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10;
 
+  const router = useRouter();
   const renderPageNumbers = () => {
     const pages = [];
 
@@ -65,49 +123,51 @@ export default function Page() {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
- 
-  
   return (
     <div className="min-h-screen bg-gray-50 font-inter">
       <Navbar />
       <section className="container mx-auto px-4 py-6 sm:w-11/12">
         <div className="mb-8 mt-4">
           <h1 className="text-start text-neutral-800 text-3xl font-bold transition-all duration-300 hover:text-blue-600 cursor-pointer sm:text-4xl md:text-5xl font-inter">
-          Available Leads
+            Available Leads
           </h1>
           <div className="w-24 h-1 bg-blue-500 mt-2 rounded-full hover:w-32 transition-all duration-300"></div>
         </div>
 
-
         {/* filter */}
         <section className="flex flex-wrap gap-2 font-inter my-6 md:my-10">
-            <button className="border border-gray-300 rounded-md md:rounded-none md:rounded-tl-md md:rounded-bl-md p-2 md:p-4 px-4 md:px-8 flex items-center justify-center">
-              <Image
-                src={'/dashboard/filter.png'}
-                width={20} 
-                height={20} 
-                alt="Filter Icon"
-              />
-            </button>
-            <button className="border border-gray-300 rounded-md md:rounded-none p-2 md:p-4 px-4 md:px-8 text-sm md:text-base">Filter By</button>
-            <button className="border border-gray-300 rounded-md md:rounded-none p-2 md:p-4 px-4 md:px-8 flex items-center gap-1 text-sm md:text-base"> 
-              Date<ChevronDownIcon className="h-4 w-4 md:h-5 md:w-5"/>
-            </button>
-            <button className="border border-gray-300 rounded-md md:rounded-none p-2 md:p-4 px-4 md:px-8 flex items-center gap-1 text-sm md:text-base">
-              Order Type<ChevronDownIcon className="h-4 w-4 md:h-5 md:w-5"/>
-            </button>
-            <button className="border border-gray-300 rounded-md md:rounded-none p-2 md:p-4 px-4 md:px-8 text-sm md:text-base">Order Status</button>
-            <button className="border border-gray-300 rounded-md md:rounded-none md:rounded-tr-md md:rounded-br-md text-red-500 p-2 md:p-4 px-4 md:px-8 flex items-center gap-1 text-sm md:text-base">
-              <Undo2Icon className="h-4 w-4 md:h-5 md:w-5"/> Reset Filter
-            </button>
+          <button className="border border-gray-300 rounded-md md:rounded-none md:rounded-tl-md md:rounded-bl-md p-2 md:p-4 px-4 md:px-8 flex items-center justify-center">
+            <Image
+              src={"/dashboard/filter.png"}
+              width={20}
+              height={20}
+              alt="Filter Icon"
+            />
+          </button>
+          <button className="border border-gray-300 rounded-md md:rounded-none p-2 md:p-4 px-4 md:px-8 text-sm md:text-base">
+            Filter By
+          </button>
+          <button className="border border-gray-300 rounded-md md:rounded-none p-2 md:p-4 px-4 md:px-8 flex items-center gap-1 text-sm md:text-base">
+            Date
+            <ChevronDownIcon className="h-4 w-4 md:h-5 md:w-5" />
+          </button>
+          <button className="border border-gray-300 rounded-md md:rounded-none p-2 md:p-4 px-4 md:px-8 flex items-center gap-1 text-sm md:text-base">
+            Order Type
+            <ChevronDownIcon className="h-4 w-4 md:h-5 md:w-5" />
+          </button>
+          <button className="border border-gray-300 rounded-md md:rounded-none p-2 md:p-4 px-4 md:px-8 text-sm md:text-base">
+            Order Status
+          </button>
+          <button className="border border-gray-300 rounded-md md:rounded-none md:rounded-tr-md md:rounded-br-md text-red-500 p-2 md:p-4 px-4 md:px-8 flex items-center gap-1 text-sm md:text-base">
+            <Undo2Icon className="h-4 w-4 md:h-5 md:w-5" /> Reset Filter
+          </button>
         </section>
-       
-    
+
         {/* Recent Requirements Table */}
         <section className="w-full px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-medium text-black font-inter">
-            Available Manufacturing Leads
+              Available Manufacturing Leads
             </h2>
             <button className="text-xs font-bold text-black underline font-inter">
               View All
@@ -148,74 +208,32 @@ export default function Page() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 text-sm text-black font-semibold font-inter">
-                <tr>
-                  <td className="px-4 py-3">L1001</td>
-                  <td className="px-4 py-3">PCB Assembly</td>
-                  <td className="px-4 py-3">Electronics</td>
-                  <td className="px-4 py-3">FR4</td>
-                  <td className="px-4 py-3">500</td>
-                  <td className="px-4 py-3">₹25,000</td>
-                  <td className="px-4 py-3">15-Jan-2023</td>
-                  <td className="px-4 py-3">12-May-2023</td>
-                  <td className="px-4 py-3">
-                    <button className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1">
-                      View
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-3">L1003</td>
-                  <td className="px-4 py-3">Machined Shaft</td>
-                  <td className="px-4 py-3">Machining</td>
-                  <td className="px-4 py-3">Steel</td>
-                  <td className="px-4 py-3">800</td>
-                  <td className="px-4 py-3">₹1,25,000</td>
-                  <td className="px-4 py-3">22-Feb-2023</td>
-                  <td className="px-4 py-3">10-May-2023</td>
-                  <td className="px-4 py-3">
-                    <button className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1">
-                      View
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-3">L1004</td>
-                  <td className="px-4 py-3">Plastic Housing</td>
-                  <td className="px-4 py-3">Plastic Molding</td>
-                  <td className="px-4 py-3">ABS</td>
-                  <td className="px-4 py-3">3,000</td>
-                  <td className="px-4 py-3">₹74,000</td>
-                  <td className="px-4 py-3">10-Mar-2023</td>
-                  <td className="px-4 py-3">20-May-2023</td>
-                  <td className="px-4 py-3">
-                    <button className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1">
-                      View
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-3">L1002</td>
-                  <td className="px-4 py-3">Rubber Gasket</td>
-                  <td className="px-4 py-3">Molding</td>
-                  <td className="px-4 py-3">Silicone Rubber</td>
-                  <td className="px-4 py-3">5,000</td>
-                  <td className="px-4 py-3">₹55,000</td>
-                  <td className="px-4 py-3">05-Apr-2023</td>
-                  <td className="px-4 py-3">28-May-2023</td>
-                  <td className="px-4 py-3">
-                    <button className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1">
-                      View
-                    </button>
-                  </td>
-                </tr>
+                {leadsData.map((lead) => (
+                  <tr key={lead.id}>
+                    <td className="px-4 py-3">{lead.id}</td>
+                    <td className="px-4 py-3">{lead.partName}</td>
+                    <td className="px-4 py-3">{lead.category}</td>
+                    <td className="px-4 py-3">{lead.material}</td>
+                    <td className="px-4 py-3">
+                      {lead.quantity.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3">{lead.price}</td>
+                    <td className="px-4 py-3">{lead.leadTime}</td>
+                    <td className="px-4 py-3">{lead.submittedDate}</td>
+                    <td className="px-4 py-3">
+                    <button 
+      onClick={() => router.push(`/buyer-dashboard/view-offer/${lead.id}`)}
+      className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1 hover:bg-indigo-50"
+    >
+      View
+    </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         </section>
-
-    
-
- 
 
         <section className="overflow-x-auto p-2 fixed bottom-0 right-0 max-w-fit font-inter">
           <div className="border border-zinc-200 rounded-lg bg-white">
@@ -233,10 +251,9 @@ export default function Page() {
 
                 {/* Pages */}
                 {renderPageNumbers().map((btn, i) => {
-                
                   return React.cloneElement(btn, {
                     key: i,
-                    className: btn.props.className + " font-inter"
+                    className: btn.props.className + " font-inter",
                   });
                 })}
 
@@ -257,5 +274,3 @@ export default function Page() {
     </div>
   );
 }
-
-
