@@ -4,12 +4,12 @@ import { useState } from "react";
 import AdminNavbar from "@/components/dashboard/AdminNavbar";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { AdminContextProvider } from "@/context/AdminContex";
-
+ 
 import { ReactNode } from "react";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  
+
   return (
     <AdminContextProvider>
       <div className="min-h-screen bg-slate-100">

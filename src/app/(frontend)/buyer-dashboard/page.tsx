@@ -342,7 +342,7 @@ export default function Page() {
 createdAt}</td>
       <td className="px-4 py-3">
         <button 
-          onClick={() => router.push(`/buyer-dashboard/view-requirement/${item.id}`)}
+          // onClick={() => router.push(`/buyer-dashboard/view-requirement/${item.id}`)}
           className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1 hover:bg-indigo-50"
         >
           View

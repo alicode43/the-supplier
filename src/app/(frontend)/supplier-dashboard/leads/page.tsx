@@ -2,12 +2,45 @@
 
 import Navbar from "@/components/dashboard/Navbar";
 import LeadsTable from "@/components/dashboard/LeadsTable";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Cookies from "js-cookie";
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
  
+ 
+// Define types
+interface Attachment {
+  url: string;
+  name?: string;
+}
+
+interface Requirement {
+  leadId: string;
+  partName: string;
+  attachments: Attachment[] | string[];
+  category: string;
+  material: string;
+  quantity: string | number;
+  targetPrice: string;
+  notes?: string;
+  leadTime: string;
+  createdAt: string;
+  status?: string;
+  submitted?: string;
+  viewUrl?: string;
+  price?: string;
+}
 
 export default function Page() {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 10;
+  const [totalPages, setTotalPages] = useState(10);
+
+  // State for requirements data and filtering
+  const [requirementsData, setRequirementsData] = useState<Requirement[]>([]);
+  const [filteredRequirements, setFilteredRequirements] = useState<Requirement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Filter states
   const [category, setCategory] = useState("All Categories");
@@ -18,61 +51,194 @@ export default function Page() {
   const [keyword, setKeyword] = useState("");
   const [postedWithin, setPostedWithin] = useState("Any Time");
   
-  // Apply filters function
-  const applyFilters = () => {
-    // In a real app, this would filter the leads based on criteria or trigger an API call
-    console.log("Applying filters:", {
-      category, material, minQuantity, maxQuantity, buyerLocation, keyword, postedWithin
-    });
-  };
+  // Search terms for filtering
+  const [reqSearchTerm, setReqSearchTerm] = useState("");
+  const [reqCategory, setReqCategory] = useState("");
+  const [reqDateRange, setReqDateRange] = useState("");
+  
+  // State for attachment modal
+  const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
+  const [currentAttachments, setCurrentAttachments] = useState<any[]>([]);
+  const [currentItemName, setCurrentItemName] = useState("");
+  
+  const url = process.env.NEXT_PUBLIC_BACKEND_URL || "";
+  const accessToken = Cookies.get("accessToken");
 
-  // Sample lead data
-  const recentLeads = [
-    {
-      leadId: "L1001",
-      partName: "PCB Assembly",
-      category: "Electronics",
-      material: "FR4",
-      quantity: "500",
-      price: "₹25,000",
-      leadTime: "15-Jan-2023",
-      submitted: "12-May-2023",
-      viewUrl: "/supplier-dashboard/lead/L1001"
-    },
-    {
-      leadId: "L1003",
-      partName: "Machined Shaft",
-      category: "Machining",
-      material: "Steel",
-      quantity: "800",
-      price: "₹1,25,000",
-      leadTime: "22-Feb-2023",
-      submitted: "10-May-2023",
-      viewUrl: "/supplier-dashboard/lead/L1003"
-    },
-    {
-      leadId: "L1004",
-      partName: "Plastic Housing",
-      category: "Plastic Molding",
-      material: "ABS",
-      quantity: "3,000",
-      price: "₹74,000",
-      leadTime: "10-Mar-2023",
-      submitted: "20-May-2023",
-      viewUrl: "/supplier-dashboard/lead/L1004"
-    },
-    {
-      leadId: "L1002",
-      partName: "Rubber Gasket",
-      category: "Molding",
-      material: "Silicone Rubber",
-      quantity: "5,000",
-      price: "₹55,000",
-      leadTime: "05-Apr-2023",
-      submitted: "28-May-2023",
-      viewUrl: "/supplier-dashboard/lead/L1002"
+  // Fetch requirements data from API
+  useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Make API request with authentication header
+        const response = await axios.get(
+          `${url}/api/v1/supply/getAllQuotes`,
+          {
+            headers: {
+              "Authorization": `Bearer ${accessToken}`,
+              "Content-Type": "application/json"
+            }
+          }
+        );
+        
+        // Check if response is successful
+        if (response.data.success) {
+          const leads = response.data.data.map((lead: any) => ({
+            ...lead,
+            viewUrl: `/supplier-dashboard/lead/${lead.leadId}`,
+            price: `₹ ${lead.targetPrice}`
+          }));
+          
+          setRequirementsData(leads);
+          setFilteredRequirements(leads);
+          
+          // Update total pages based on data length
+          setTotalPages(Math.ceil(leads.length / 10));
+        } else {
+          setError(response.data.message || "Failed to fetch leads");
+          toast.error("Failed to fetch leads");
+        }
+      } catch (err: any) {
+        console.error("Error fetching leads:", err);
+        setError(err.message || "An error occurred while fetching leads");
+        toast.error("Error loading leads data");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (accessToken) {
+      fetchLeads();
+    } else {
+      toast.error("Authentication required");
+      setLoading(false);
     }
-  ];
+  }, [url, accessToken]);
+
+  // Apply filters when filter values change for requirements
+  useEffect(() => {
+    if (!requirementsData || requirementsData.length === 0) return;
+
+    let results = [...requirementsData];
+    
+    // Apply search filter
+    if (reqSearchTerm) {
+      results = results.filter(item => 
+        (item.leadId?.toString() || "").includes(reqSearchTerm) ||
+        (item.partName?.toLowerCase() || "").includes(reqSearchTerm.toLowerCase()) ||
+        (item.category?.toLowerCase() || "").includes(reqSearchTerm.toLowerCase())
+      );
+    }
+    
+    // Apply category filter
+    if (reqCategory) {
+      results = results.filter(item => 
+        (item.category?.toLowerCase() || "").includes(reqCategory.toLowerCase())
+      );
+    }
+    
+    // Apply date filter
+    if (reqDateRange) {
+      results = results.filter(item => item.createdAt && item.createdAt.includes(reqDateRange));
+    }
+    
+    setFilteredRequirements(results);
+  }, [requirementsData, reqSearchTerm, reqCategory, reqDateRange]);
+  
+  // Apply custom filters function
+  const applyFilters = () => {
+    let results = [...requirementsData];
+    
+    // Apply category filter
+    if (category !== "All Categories") {
+      results = results.filter(item => 
+        (item.category?.toLowerCase() || "").includes(category.toLowerCase())
+      );
+    }
+    
+    // Apply material filter
+    if (material !== "All Materials") {
+      results = results.filter(item => 
+        (item.material?.toLowerCase() || "").includes(material.toLowerCase())
+      );
+    }
+    
+    // Apply quantity range filter
+    if (minQuantity) {
+      results = results.filter(item => {
+        const qty = typeof item.quantity === 'string' 
+          ? parseInt(item.quantity.replace(/,/g, ''), 10) 
+          : item.quantity;
+        return !isNaN(qty) && qty >= parseInt(minQuantity, 10);
+      });
+    }
+    
+    if (maxQuantity) {
+      results = results.filter(item => {
+        const qty = typeof item.quantity === 'string' 
+          ? parseInt(item.quantity.replace(/,/g, ''), 10) 
+          : item.quantity;
+        return !isNaN(qty) && qty <= parseInt(maxQuantity, 10);
+      });
+    }
+    
+    // Apply keyword filter
+    if (keyword) {
+      results = results.filter(item => 
+        (item.partName?.toLowerCase() || "").includes(keyword.toLowerCase()) ||
+        (item.notes?.toLowerCase() || "").includes(keyword.toLowerCase()) ||
+        (item.material?.toLowerCase() || "").includes(keyword.toLowerCase())
+      );
+    }
+    
+    // Apply posted within filter
+    if (postedWithin !== "Any Time") {
+      const now = new Date();
+      let cutoffDate = new Date();
+      
+      switch (postedWithin) {
+        case "Last 24 hours":
+          cutoffDate.setDate(now.getDate() - 1);
+          break;
+        case "Last 7 days":
+          cutoffDate.setDate(now.getDate() - 7);
+          break;
+        case "Last 30 days":
+          cutoffDate.setDate(now.getDate() - 30);
+          break;
+        case "Last 90 days":
+          cutoffDate.setDate(now.getDate() - 90);
+          break;
+      }
+      
+      results = results.filter(item => {
+        const createdDate = new Date(item.createdAt);
+        return createdDate >= cutoffDate;
+      });
+    }
+    
+    setFilteredRequirements(results);
+    toast.info(`Found ${results.length} leads matching your criteria`);
+  };
+  
+  // Open attachment modal function
+  const openAttachmentModal = (item: any) => {
+    if (!item.attachments) {
+      toast.info("No attachments available for this item.");
+      return;
+    }
+    
+    if (Array.isArray(item.attachments) && item.attachments.length > 0) {
+      setCurrentAttachments(item.attachments);
+      setCurrentItemName(item.partName || "Item");
+      setIsAttachmentModalOpen(true);
+    } else {
+      setCurrentAttachments(Array.isArray(item.attachments) ? item.attachments : [item.attachments]);
+      setCurrentItemName(item.partName || "Item");
+      setIsAttachmentModalOpen(true);
+    }
+  };
 
   const renderPageNumbers = () => {
     const pages = [];
@@ -130,10 +296,18 @@ export default function Page() {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
- 
+  // Get paginated data
+  const getPaginatedData = () => {
+    const startIndex = (currentPage - 1) * 10;
+    const endIndex = startIndex + 10;
+    return filteredRequirements.slice(startIndex, endIndex);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 font-inter">
       <Navbar />
+      <ToastContainer position="top-right" autoClose={3000} />
+      
       <section className="container mx-auto px-4 py-6 sm:w-11/12">
         <div className="mb-8 mt-4">
           <h1 className="text-start text-neutral-800 text-3xl font-bold transition-all duration-300 hover:text-blue-600 cursor-pointer sm:text-4xl md:text-5xl">
@@ -268,51 +442,131 @@ export default function Page() {
           </div>
         </div>
 
-        {/* Using the new LeadsTable component */}
-        <LeadsTable 
-          leads={recentLeads} 
-          viewAllUrl="/supplier-dashboard/leads"
-        />
- 
+        {/* Results count */}
+        <div className="mb-4">
+          <div className="text-neutral-800/60 text-sm font-semibold">
+            Available Leads: {filteredRequirements ? filteredRequirements.length : 0}
+            {loading && " (Loading...)"}
+          </div>
+        </div>
+
+        {/* Using LeadsTable with real data */}
+        {loading ? (
+          <div className="flex justify-center items-center p-12">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent"></div>
+          </div>
+        ) : error ? (
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center">
+            {error}
+          </div>
+        ) : (
+          <LeadsTable 
+            leads={getPaginatedData()} 
+            viewAllUrl="/supplier-dashboard/leads"
+          />
+        )}
 
         <div className="sm:h-10"></div>
 
-            <section className="overflow-x-auto p-2 fixed  bottom-0 right-0 max-w-fit font-inter">
-                <div className="border border-zinc-200 rounded-lg bg-white">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 py-3">
-                    <div className="inline-flex flex-wrap items-center border border-zinc-200 rounded-lg overflow-hidden">
-                      {/* Prev */}
-                      <button
-                        onClick={goToPrevious}
-                        className="h-9 px-2 bg-white border-r border-zinc-300 hover:bg-zinc-100 disabled:opacity-50"
-                        disabled={currentPage === 1}
-                        aria-label="Previous"
-                      >
-                        <div className="w-4 h-4 border-t-2 border-l-2 border-zinc-500 transform rotate-[-45deg] mt-1 ml-1"></div>
-                      </button>
-      
-                      {/* Pages */}
-                      {renderPageNumbers().map((btn, i) => {
-                      
-                        return React.cloneElement(btn, {
-                          key: i,
-                          className: btn.props.className + " font-inter"
-                        });
-                      })}
-      
-                      {/* Next */}
-                      <button
-                        onClick={goToNext}
-                        className="h-9 px-2 bg-white border-l border-zinc-300 hover:bg-zinc-100 disabled:opacity-50"
-                        disabled={currentPage === totalPages}
-                        aria-label="Next"
-                      >
-                        <div className="w-4 h-4 border-t-2 border-l-2 border-zinc-500 transform rotate-135 mt-1 ml-1"></div>
-                      </button>
-                    </div>
+        {/* Attachment Modal */}
+        {isAttachmentModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[80vh] overflow-hidden">
+              <div className="flex justify-between items-center p-5 border-b">
+                <h3 className="font-bold text-lg">
+                  Attachments for {currentItemName}
+                </h3>
+                <button
+                  onClick={() => setIsAttachmentModalOpen(false)}
+                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-5 overflow-y-auto" style={{ maxHeight: "60vh" }}>
+                {currentAttachments && currentAttachments.length > 0 ? (
+                  <div className="grid gap-4">
+                    {currentAttachments.map((attachment, index) => {
+                      const url = typeof attachment === 'object' ? attachment.url : attachment;
+                      const name = typeof attachment === 'object' ? 
+                        attachment.name || `Attachment ${index + 1}` : 
+                        `Attachment ${index + 1}`;
+                      const isImage = typeof url === 'string' && url.match(/\.(jpeg|jpg|gif|png)$/i);
+
+                      return (
+                        <div key={`attachment-${index}`} className="border rounded-lg overflow-hidden">
+                          <div className="flex justify-between items-center p-4 bg-gray-50">
+                            <span className="font-medium truncate">{name}</span>
+                            <a
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-indigo-500 hover:text-indigo-700"
+                            >
+                              Open
+                            </a>
+                          </div>
+                          {isImage && (
+                            <div className="p-4 flex justify-center">
+                              <img 
+                                src={url} 
+                                alt={name} 
+                                className="max-h-48 object-contain"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
-                </div>
-              </section>
+                ) : (
+                  <p className="text-center text-gray-500">No attachments available</p>
+                )}
+              </div>
+
+              <div className="border-t p-4 flex justify-end">
+                <button
+                  onClick={() => setIsAttachmentModalOpen(false)}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <section className="overflow-x-auto p-2 fixed bottom-0 right-0 max-w-fit font-inter">
+          <div className="border border-zinc-200 rounded-lg bg-white">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 py-3">
+              <div className="inline-flex flex-wrap items-center border border-zinc-200 rounded-lg overflow-hidden">
+                {/* Prev */}
+                <button
+                  onClick={goToPrevious}
+                  className="h-9 px-2 bg-white border-r border-zinc-300 hover:bg-zinc-100 disabled:opacity-50"
+                  disabled={currentPage === 1}
+                  aria-label="Previous"
+                >
+                  <div className="w-4 h-4 border-t-2 border-l-2 border-zinc-500 transform rotate-[-45deg] mt-1 ml-1"></div>
+                </button>
+
+                {/* Pages */}
+                {renderPageNumbers()}
+
+                {/* Next */}
+                <button
+                  onClick={goToNext}
+                  className="h-9 px-2 bg-white border-l border-zinc-300 hover:bg-zinc-100 disabled:opacity-50"
+                  disabled={currentPage === totalPages}
+                  aria-label="Next"
+                >
+                  <div className="w-4 h-4 border-t-2 border-l-2 border-zinc-500 transform rotate-135 mt-1 ml-1"></div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
       </section>
     </div>
   );

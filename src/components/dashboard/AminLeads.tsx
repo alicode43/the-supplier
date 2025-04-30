@@ -1,402 +1,609 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {   Trash2, Eye, FilterX, ChevronDown, ChevronUp } from "lucide-react";
+import { useState, useEffect, Fragment } from "react";
+import { Trash2, Eye, FilterX, ChevronDown, ChevronUp, X, CheckCircle } from "lucide-react";
+import Cookies from "js-cookie";
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from "next/navigation";
 
+// Define types
+interface Attachment {
+  url: string;
+  name?: string;
+}
+
+interface Requirement {
+  leadId: string;
+  partName: string;
+  attachments: Attachment[] | string[];
+  category: string;
+  material: string;
+  quantity: string | number;
+  targetPrice: string;
+  notes?: string;
+  leadTime: string;
+  createdAt: string;
+  status?: string;
+}
+
+// Define status types
+type StatusType = 'pending' | 'under_review' | 'approved' | 'rejected' | 'completed';
+ 
 export default function AdminLeads() {
-  // State for filters and leads data
-  const [orderType, setOrderType] = useState("");
-  const [orderStatus, setOrderStatus] = useState("");
-  const [dateRange, setDateRange] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [leads, setLeads] = useState<Array<{
-    id: string;
-    partName: string;
-    drawingFile: string;
-    category: string;
-    quantity: string;
-    futureRequirement: string;
-    targetPrice: string;
-    leadTime: string;
-    productionNotes: string;
-    submitDate: string;
-    offerFile: string;
-  }>>([]);
-  const [filteredLeads, setFilteredLeads] = useState<Array<{
-    id: string;
-    partName: string;
-    drawingFile: string;
-    category: string;
-    quantity: string;
-    futureRequirement: string;
-    targetPrice: string;
-    leadTime: string;
-    productionNotes: string;
-    submitDate: string;
-    offerFile: string;
-  }>>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [sortField, setSortField] = useState<keyof typeof mockLeads[0] | null>(null);
-  const [sortDirection, setSortDirection] = useState("asc");
+  const router = useRouter();
+  
+  // Get access token from cookies on client side only
+ 
+  const accessToken = Cookies.get("accessToken");
+
+  // Add state for status editing
+  const [editingStatus, setEditingStatus] = useState<{ [leadId: string]: StatusType | null }>({});
+  const [confirmingStatus, setConfirmingStatus] = useState<{ [leadId: string]: boolean }>({});
+  
+  useEffect(() => {
+    console.log("Access Token:", accessToken);
+    if (!accessToken) {
+      toast.error("Authentication required");
+    
+      // router.push("/signin");
+     
+      return;
+    }
+  }, []);
+  
+ 
+  // State for attachment modal
+  const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
+  const [currentAttachments, setCurrentAttachments] = useState<any[]>([]);
+  const [currentItemName, setCurrentItemName] = useState("");
+
+  // State for requirements data and filtering
+  const [requirementsData, setRequirementsData] = useState<Requirement[]>([]);
+  const [filteredRequirements, setFilteredRequirements] = useState<Requirement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [reqSearchTerm, setReqSearchTerm] = useState("");
+  const [reqCategory, setReqCategory] = useState("");
+  const [reqDateRange, setReqDateRange] = useState("");
+  
+  const url = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
   // Sample data for demonstration
-  const mockLeads = [
-    {
-      id: "201",
-      partName: "John Doe",
-      drawingFile: "drawing201.pdf",
-      category: "CNC Milling",
-      quantity: "500",
-      futureRequirement: "Regular Requirement",
-      targetPrice: "₹25,000",
-      leadTime: "15-May-2023",
-      productionNotes: "notes201.pdf",
-      submitDate: "01-May-2023 10:30 AM",
-      offerFile: "offer201.pdf"
-    },
-    {
-      id: "202",
-      partName: "Jane Smith",
-      drawingFile: "drawing202.pdf",
-      category: "Laser Cutting",
-      quantity: "1000",
-      futureRequirement: "Not Sure",
-      targetPrice: "₹1,25,000",
-      leadTime: "22-May-2023",
-      productionNotes: "notes202.pdf",
-      submitDate: "02-May-2023 09:15 AM",
-      offerFile: "offer202.pdf"
-    },
-    {
-      id: "203",
-      partName: "Alice Johnson",
-      drawingFile: "drawing203.pdf",
-      category: "Injection Moulding",
-      quantity: "1000",
-      futureRequirement: "Regular Requirement",
-      targetPrice: "₹74,000",
-      leadTime: "30-May-2023",
-      productionNotes: "notes203.pdf",
-      submitDate: "03-May-2023 02:45 PM",
-      offerFile: "offer203.pdf"
-    },
-  ];
+ 
+
+  // Open attachment modal function
+  const openAttachmentModal = (item: any) => {
+    if (!item.attachments) {
+      toast.info("No attachments available for this item.");
+      return;
+    }
+    
+    if (Array.isArray(item.attachments) && item.attachments.length > 0) {
+      setCurrentAttachments(item.attachments);
+      setCurrentItemName(item.partName || "Item");
+      setIsAttachmentModalOpen(true);
+    } else {
+      // If it's a single attachment (string or object)
+      setCurrentAttachments(Array.isArray(item.attachments) ? item.attachments : [item.attachments]);
+      setCurrentItemName(item.partName || "Item");
+      setIsAttachmentModalOpen(true);
+    }
+  };
 
   // Fetch leads on component mount
-  useEffect(() => {
-    // In a real app, this would be an API call
-    setTimeout(() => {
-      setLeads(mockLeads);
-      setFilteredLeads(mockLeads);
-      setIsLoading(false);
-    }, 800);
-  }, []);
+ 
 
-  // Apply filters when filter values change
+ 
+  // Apply filters when filter values change for requirements
   useEffect(() => {
-    let results = leads;
+    if (!requirementsData || requirementsData.length === 0) return;
+
+    let results = [...requirementsData];
     
-    if (orderType) {
-      results = results.filter(lead => lead.category.toLowerCase().includes(orderType.toLowerCase()));
-    }
-    
-    if (orderStatus) {
-      results = results.filter(lead => lead.futureRequirement.toLowerCase().includes(orderStatus.toLowerCase()));
-    }
-    
-    if (dateRange) {
-      // In a real app, implement date range filtering logic
-    }
-    
-    if (searchTerm) {
-      results = results.filter(lead => 
-        lead.id.includes(searchTerm) ||
-        lead.partName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.category.toLowerCase().includes(searchTerm.toLowerCase())
+    // Apply search filter
+    if (reqSearchTerm) {
+      results = results.filter(item => 
+        (item.leadId?.toString() || "").includes(reqSearchTerm) ||
+        (item.partName?.toLowerCase() || "").includes(reqSearchTerm.toLowerCase()) ||
+        (item.category?.toLowerCase() || "").includes(reqSearchTerm.toLowerCase())
       );
     }
     
-    // Apply sorting if active
-    if (sortField) {
-      results = [...results].sort((a, b) => {
-        const aValue = a[sortField].toString().toLowerCase();
-        const bValue = b[sortField].toString().toLowerCase();
-        
-        if (sortDirection === "asc") {
-          return aValue > bValue ? 1 : -1;
-        } else {
-          return aValue < bValue ? 1 : -1;
-        }
-      });
+    // Apply category filter
+    if (reqCategory) {
+      results = results.filter(item => 
+        (item.category?.toLowerCase() || "").includes(reqCategory.toLowerCase())
+      );
     }
     
-    setFilteredLeads(results);
-  }, [leads, orderType, orderStatus, dateRange, searchTerm, sortField, sortDirection]);
+    // Apply date filter
+    if (reqDateRange) {
+      results = results.filter(item => item.createdAt && item.createdAt.includes(reqDateRange));
+    }
+    
+    setFilteredRequirements(results);
+  }, [requirementsData, reqSearchTerm, reqCategory, reqDateRange]);
 
-  // Handle sorting
-  interface Lead {
-    id: string;
-    partName: string;
-    drawingFile: string;
-    category: string;
-    quantity: string;
-    futureRequirement: string;
-    targetPrice: string;
-    leadTime: string;
-    productionNotes: string;
-    submitDate: string;
-    offerFile: string;
-  }
+ 
+  // Reset all filters for requirements
+  const resetRequirementFilters = () => {
+    setReqSearchTerm("");
+    setReqCategory("");
+    setReqDateRange("");
+  };
 
-  const handleSort = (field: keyof Lead) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
+ 
+
+  
+  // Handle requirement deletion
+  const handleDeleteRequirement = (leadId: string) => {
+    if (typeof window !== 'undefined' && window.confirm(`Are you sure you want to delete requirement ${leadId}?`)) {
+      try {
+   
+        // For now, just update local state
+        setRequirementsData(requirementsData.filter(item => item.leadId !== leadId));
+        setFilteredRequirements(filteredRequirements.filter(item => item.leadId !== leadId));
+        toast.success("Requirement deleted successfully");
+      } catch (err) {
+        console.error("Error deleting requirement:", err);
+        toast.error("Failed to delete requirement");
+      }
     }
   };
 
-  // Reset all filters
-  const resetFilters = () => {
-    setOrderType("");
-    setOrderStatus("");
-    setDateRange("");
-    setSearchTerm("");
-    setSortField(null);
-    setSortDirection("asc");
+  // Handle status change
+  const handleStatusChange = (leadId: string, status: StatusType) => {
+    setEditingStatus(prev => ({
+      ...prev,
+      [leadId]: status
+    }));
+    setConfirmingStatus(prev => ({
+      ...prev,
+      [leadId]: true
+    }));
   };
 
-  // Handle file view
-  interface ViewFileHandler {
-    (fileType: 'drawing' | 'notes' | 'offer', fileId: string): void;
-  }
-
-  const handleViewFile: ViewFileHandler = (fileType, fileId) => {
-    // In a real app, this would open the file or a modal
-    alert(`Viewing ${fileType} for lead ${fileId}`);
-  };
-
-  // Handle lead deletion
-  const handleDeleteLead = (id: string) => {
-    // In a real app, this would call an API endpoint
-    if (confirm(`Are you sure you want to delete lead ${id}?`)) {
-      setLeads(leads.filter(lead => lead.id !== id));
-      setFilteredLeads(filteredLeads.filter(lead => lead.id !== id));
+  // Handle status confirmation
+  const handleConfirmStatus = async (leadId: string) => {
+    const newStatus = editingStatus[leadId];
+    
+    if (!newStatus) return;
+    
+    try {
+      // Make API request to update status
+      const response = await axios.post(
+        `${url}/api/v1/supply/updateStatus`,
+        { leadId, status: newStatus },
+        {
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+      
+      if (response.data.success) {
+        toast.success(`Status for lead ${leadId} updated to ${newStatus}`);
+        
+        // Update status in local state
+        const updatedData = requirementsData.map(item => 
+          item.leadId === leadId ? {...item, status: newStatus} : item
+        );
+        
+        setRequirementsData(updatedData);
+        setFilteredRequirements(filteredRequirements.map(item => 
+          item.leadId === leadId ? {...item, status: newStatus} : item
+        ));
+      } else {
+        toast.error(response.data.message || "Failed to update status");
+      }
+    } catch (err: any) {
+      console.error("Error updating status:", err);
+      toast.error(err.message || "An error occurred while updating status");
+    } finally {
+      // Reset editing and confirming state
+      setEditingStatus(prev => ({
+        ...prev,
+        [leadId]: null
+      }));
+      setConfirmingStatus(prev => ({
+        ...prev,
+        [leadId]: false
+      }));
     }
   };
+
+  // Handle cancel status update
+  const handleCancelStatusUpdate = (leadId: string) => {
+    setEditingStatus(prev => ({
+      ...prev,
+      [leadId]: null
+    }));
+    setConfirmingStatus(prev => ({
+      ...prev,
+      [leadId]: false
+    }));
+  };
+
+  // Status label formatting
+  const getStatusLabel = (status?: string) => {
+    if (!status) return "Pending";
+    
+    return status
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  // Status color mapping
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case 'approved':
+        return 'text-green-500 bg-green-50 border-green-500';
+      case 'rejected':
+        return 'text-red-500 bg-red-50 border-red-500';
+      case 'completed':
+        return 'text-blue-500 bg-blue-50 border-blue-500';
+      case 'under_review':
+        return 'text-orange-500 bg-orange-50 border-orange-500';
+      default:
+        return 'text-gray-500 bg-gray-50 border-gray-500';
+    }
+  };
+
+  // Fetch requirements data from API
+  useEffect(() => {
+    // Check if user is authenticated
+
+    
+    // Define the function to fetch quotes
+    const fetchQuotes = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Make API request with authentication header
+        const response = await axios.get(
+          `${url}/api/v1/supply/getAllQuotes`,
+          {
+            headers: {
+              "Authorization": `Bearer ${accessToken}`,
+              "Content-Type": "application/json"
+            }
+          }
+        );
+        
+        // Check if response is successful
+        if (response.data.success) {
+          setRequirementsData(response.data.data);
+          setFilteredRequirements(response.data.data);
+        } else {
+          setError(response.data.message || "Failed to fetch quotes");
+        }
+      } catch (err: any) {
+        console.error("Error fetching quotes:", err);
+        setError(err.message || "An error occurred while fetching quotes");
+        
+        // if (axios.isAxiosError(err) && err.response?.status === 401) {
+        //   toast.error("Session expired. Please login again.");
+        //   router.push('/signin');
+        // }
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    // Call the fetch function
+    fetchQuotes();
+  }, [accessToken, url, router]);
 
   return (
     <div className="self-stretch px-5 py-4 flex flex-col gap-4">
+      <ToastContainer position="top-right" autoClose={3000} />
+      
       {/* Header */}
       <div className="flex flex-col gap-2.5 overflow-hidden">
-        <h1 className="text-neutral-800 text-3xl font-bold  ">Leads Management</h1>
+        <h1 className="text-neutral-800 text-3xl font-bold">Leads Management</h1>
       </div>
       
-      {/* Filters */}
-      <div className="w-full bg-gray-50 rounded-[10px] border-[0.60px] border-neutral-300 p-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Search field */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search by ID, Name or Category"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-          
-          {/* Order Type filter */}
-          <div className="relative">
-            <select
-              value={orderType}
-              onChange={(e) => setOrderType(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md appearance-none"
-            >
-              <option value="">Select Order Type</option>
-              <option value="CNC Milling">CNC Milling</option>
-              <option value="Laser Cutting">Laser Cutting</option>
-              <option value="Injection Moulding">Injection Moulding</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              <ChevronDown size={16} />
+      {/* Leads Section */}
+   
+      {/* Requirements Section */}
+      <div className="bg-white rounded-xl p-6 shadow-sm mt-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-medium text-black">Recent Requirements</h2>
+          <button className="text-xs font-bold text-black underline">View All</button>
+        </div>
+        
+        {/* Requirements Filters */}
+        <div className="w-full bg-gray-50 rounded-[10px] border-[0.60px] border-neutral-300 p-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Search field */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by ID, Part Name or Category"
+                value={reqSearchTerm}
+                onChange={(e) => setReqSearchTerm(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+            </div>
+            
+            {/* Category filter */}
+            <div className="relative">
+              <select
+                value={reqCategory}
+                onChange={(e) => setReqCategory(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md appearance-none"
+              >
+                <option value="">Select Category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Metal">Metal</option>
+                <option value="Plastic">Plastic</option>
+                <option value="Machining">Machining</option>
+                <option value="Injection Moulding">Injection Moulding</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <ChevronDown size={16} />
+              </div>
+            </div>
+            
+            {/* Date filter */}
+            <div className="relative">
+              <input
+                type="date"
+                value={reqDateRange}
+                onChange={(e) => setReqDateRange(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
             </div>
           </div>
           
-          {/* Order Status filter */}
-          <div className="relative">
-            <select
-              value={orderStatus}
-              onChange={(e) => setOrderStatus(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md appearance-none"
-            >
-              <option value="">Select Order Status</option>
-              <option value="Regular Requirement">Regular Requirement</option>
-              <option value="Not Sure">Not Sure</option>
-              <option value="One Time">One Time</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              <ChevronDown size={16} />
-            </div>
-          </div>
-          
-          {/* Date filter */}
-          <div className="relative">
-            <input
-              type="date"
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
+          {/* Reset Filters Button */}
+          <div className="flex items-center gap-2 cursor-pointer mt-3" onClick={resetRequirementFilters}>
+            <FilterX size={16} className="text-rose-600" />
+            <span className="text-rose-600 text-sm font-semibold">Reset Filter</span>
           </div>
         </div>
-      </div>
-      
-      {/* Reset Filters */}
-      <div className="flex items-center gap-2 cursor-pointer" onClick={resetFilters}>
-        <FilterX size={16} className="text-rose-600" />
-        <span className="text-rose-600 text-sm font-semibold  ">Reset Filter</span>
-      </div>
-      
-      {/* Filter Section Labels (hidden on small screens) */}
-      <div className="hidden md:flex items-center gap-6 text-sm text-neutral-800 font-bold">
-        <div className="w-24">Order Type</div>
-        <div className="w-24">Order Status</div>
-        <div className="w-24">Date</div>
-        <div className="w-24">Filter By</div>
-      </div>
-      
-      <div className="h-px bg-black/60"></div>
-      
-      {/* Results count */}
-      <div className="flex flex-col overflow-hidden">
-        <div className="text-neutral-800/60 text-sm font-semibold">
-          Items Found: {filteredLeads.length}
+        
+        {/* Results count */}
+        <div className="mb-4">
+          <div className="text-neutral-800/60 text-sm font-semibold">
+            Requirements Found: {filteredRequirements ? filteredRequirements.length : 0}
+          </div>
         </div>
-      </div>
-      
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <div className="bg-white rounded-2xl shadow-sm">
-          {isLoading ? (
-            <div className="py-20 text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-sky-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-              <p className="mt-4 text-gray-600">Loading leads...</p>
-            </div>
-          ) : (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-300">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Lead ID
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Part Name
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Drawing File
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Category
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Material
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Quantity
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                 Buyer Estimate
+                </th>
+                {/* <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Your Price/Pcs
+                </th> */}
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Notes
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Your Lead Time
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Submitted On
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Action
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Status
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-extrabold text-black">
+                  Delete
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 text-sm text-black font-semibold">
+              {loading ? (
                 <tr>
-                  {[
-                    { id: "id" as keyof Lead, label: "LEAD ID", sortable: true },
-                    { id: "partName" as keyof Lead, label: "PART NAME", sortable: true },
-                    { id: "drawingFile" as keyof Lead, label: "DRAWING FILE", sortable: false },
-                    { id: "category" as keyof Lead, label: "CATEGORY", sortable: true },
-                    { id: "quantity" as keyof Lead, label: "QUANTITY", sortable: true },
-                    { id: "futureRequirement" as keyof Lead, label: "FUTURE REQUIREMENT", sortable: true },
-                    { id: "targetPrice" as keyof Lead, label: "TARGET PRICE/PCS", sortable: true },
-                    { id: "leadTime" as keyof Lead, label: "LEAD TIME", sortable: true },
-                    { id: "productionNotes" as keyof Lead, label: "PRODUCTION NOTES", sortable: false },
-                    { id: "submitDate" as keyof Lead, label: "SUBMIT DATE", sortable: true },
-                    { id: "offerFile" as keyof Lead, label: "OFFER", sortable: false },
-                    { id: "actions" as keyof Lead, label: "DELETE", sortable: false }
-                  ].map(column => (
-                    <th 
-                      key={column.id} 
-                      className={`px-4 py-3 text-left text-xs font-extrabold text-black/90 uppercase tracking-wider ${column.sortable ? 'cursor-pointer' : ''}`}
-                      onClick={() => column.sortable && handleSort(column.id)}
-                    >
-                      <div className="flex items-center">
-                        {column.label}
-                        {column.sortable && sortField === column.id && (
-                          <span className="ml-1">
-                            {sortDirection === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                          </span>
+                  <td colSpan={13} className="px-4 py-8 text-center">
+                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent"></div>
+                  </td>
+                </tr>
+              ) : filteredRequirements && filteredRequirements.length > 0 ? (
+                filteredRequirements.map((item) => (
+                  <tr key={item.leadId} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">{item.leadId}</td>
+                    <td className="px-4 py-3">{item.partName}</td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => openAttachmentModal(item)}
+                        className="flex items-center justify-center w-24 h-7 p-2 rounded-lg border border-indigo-500 text-indigo-500 text-xs font-bold hover:bg-indigo-50"
+                      >
+                        <Eye size={12} className="mr-1" />
+                        Attachments
+                      </button>
+                    </td>
+                    <td className="px-4 py-3">{item.category}</td>
+                    <td className="px-4 py-3">{item.material}</td>
+                    <td className="px-4 py-3">{item.quantity}</td>
+                    <td className="px-4 py-3">₹ {item.targetPrice}</td>
+                    {/* <td className="px-4 py-3">₹ 00 {item.targetPrice}</td> */}
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => toast.info(`Notes for ${item.leadId}: ${item.notes || 'No notes available'}`)}
+                        className="flex items-center justify-center w-24 h-7 p-2 rounded-lg border border-indigo-500 text-indigo-500 text-xs font-bold hover:bg-indigo-50"
+                      >
+                        <Eye size={12} className="mr-1" />
+                        View Notes
+                      </button>
+                    </td>
+                    <td className="px-4 py-3">{item.leadTime}</td>
+                    <td className="px-4 py-3">{item.createdAt}</td>
+                    <td className="px-4 py-3">
+                      <button 
+                        className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1 hover:bg-indigo-50"
+                        onClick={() => router.push(`/admin/requirement/${item.leadId}`)}
+                      >
+                        View
+                      </button>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-col gap-2">
+                        {!confirmingStatus[item.leadId] ? (
+                          <div className="flex items-center gap-2">
+                            <div className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(item.status)}`}>
+                              {getStatusLabel(item.status)}
+                            </div>
+                            <button 
+                              onClick={() => setConfirmingStatus(prev => ({ ...prev, [item.leadId]: true }))}
+                              className="text-xs text-indigo-500 hover:underline"
+                            >
+                              Change
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-2">
+                            <select 
+                              value={editingStatus[item.leadId] || item.status || "pending"}
+                              onChange={(e) => handleStatusChange(item.leadId, e.target.value as StatusType)}
+                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="under_review">Under Review</option>
+                              <option value="approved">Approved</option>
+                              <option value="rejected">Rejected</option>
+                              <option value="completed">Completed</option>
+                            </select>
+                            <div className="flex gap-2">
+                              <button 
+                                onClick={() => handleConfirmStatus(item.leadId)}
+                                className="text-xs px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                              >
+                                Confirm
+                              </button>
+                              <button 
+                                onClick={() => handleCancelStatusUpdate(item.leadId)}
+                                className="text-xs px-2 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
                         )}
                       </div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredLeads.length > 0 ? (
-                  filteredLeads.map((lead) => (
-                    <tr key={lead.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-black/90">
-                        {lead.id}
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-black/90">
-                        {lead.partName}
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <button 
-                          onClick={() => handleViewFile('drawing', lead.id)}
-                          className="flex items-center justify-center w-24 h-7 p-2 rounded-lg border border-indigo-500 text-indigo-500 text-xs font-bold"
-                        >
-                          <Eye size={12} className="mr-1" />
-                          View
-                        </button>
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-black/90">
-                        {lead.category}
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-black/90">
-                        {lead.quantity}
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-black/90">
-                        {lead.futureRequirement}
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-black/90">
-                        {lead.targetPrice}
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-black/90">
-                        {lead.leadTime}
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <button 
-                          onClick={() => handleViewFile('notes', lead.id)}
-                          className="flex items-center justify-center w-24 h-7 p-2 rounded-lg border border-indigo-500 text-indigo-500 text-xs font-bold"
-                        >
-                          <Eye size={12} className="mr-1" />
-                          View
-                        </button>
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-black/90">
-                        {lead.submitDate}
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <button 
-                          onClick={() => handleViewFile('offer', lead.id)}
-                          className="flex items-center justify-center w-24 h-7 p-2 rounded-lg border border-indigo-500 text-indigo-500 text-xs font-bold"
-                        >
-                          <Eye size={12} className="mr-1" />
-                          View
-                        </button>
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <button 
-                          onClick={() => handleDeleteLead(lead.id)}
-                          className="flex items-center justify-center w-24 h-7 p-2 bg-red-600 rounded-lg text-white text-xs font-bold"
-                        >
-                          <Trash2 size={12} className="mr-1" />
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={12} className="px-4 py-8 text-center text-gray-500">
-                      No leads found matching your filters
+                    </td>
+                    <td className="px-4 py-3">
+                      <button 
+                        onClick={() => handleDeleteRequirement(item.leadId)}
+                        className="flex items-center justify-center w-24 h-7 p-2 bg-red-600 rounded-lg text-white text-xs font-bold hover:bg-red-700"
+                      >
+                        <Trash2 size={12} className="mr-1" />
+                        Delete
+                      </button>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          )}
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={13} className="px-4 py-8 text-center text-gray-500">
+                    {error ? `Error: ${error}` : "No requirements data found"}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
+      
+      {/* Attachment Modal */}
+      {isAttachmentModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[80vh] overflow-hidden">
+            <div className="flex justify-between items-center p-5 border-b">
+              <h3 className="font-bold text-lg">
+                Attachments for {currentItemName}
+              </h3>
+              <button
+                onClick={() => setIsAttachmentModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 focus:outline-none"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-5 overflow-y-auto" style={{ maxHeight: "60vh" }}>
+              {currentAttachments && currentAttachments.length > 0 ? (
+                <div className="grid gap-4">
+                  {currentAttachments.map((attachment, index) => {
+                    const url = typeof attachment === 'object' ? attachment.url : attachment;
+                    const name = typeof attachment === 'object' ? 
+                      attachment.name || `Attachment ${index + 1}` : 
+                      `Attachment ${index + 1}`;
+                    const isImage = typeof url === 'string' && url.match(/\.(jpeg|jpg|gif|png)$/i);
+
+                    return (
+                      <div key={`attachment-${index}`} className="border rounded-lg overflow-hidden">
+                        <div className="flex justify-between items-center p-4 bg-gray-50">
+                          <span className="font-medium truncate">{name}</span>
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-indigo-500 hover:text-indigo-700"
+                          >
+                            Open
+                          </a>
+                        </div>
+                        {isImage && (
+                          <div className="p-4 flex justify-center">
+                            <img 
+                              src={url} 
+                              alt={name} 
+                              className="max-h-48 object-contain"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-center text-gray-500">No attachments available</p>
+              )}
+            </div>
+
+            <div className="border-t p-4 flex justify-end">
+              <button
+                onClick={() => setIsAttachmentModalOpen(false)}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

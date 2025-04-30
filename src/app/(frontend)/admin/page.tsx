@@ -4,11 +4,15 @@ import Dashboard from '@/components/dashboard/AdminDashboard';
 import AdminLeads from '@/components/dashboard/AminLeads';
 import Offer from '@/components/dashboard/Offer';
 import UserManagement from '@/components/dashboard/UserManagement';
+import Cookies from 'js-cookie';
 
 function Page() {  
   // Use context instead of props
   const { activeComponent } = useAdminContext();
-  
+  const accessToken = Cookies.get("accessToken");
+  if (!accessToken) {
+    window.location.href = "/signin";
+  } 
   // Render the appropriate component based on context
   const renderComponent = () => {
     switch (activeComponent) {
