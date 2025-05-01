@@ -25,10 +25,13 @@ export default function Page() {
   }
   
   const [requirementsData, setRequirementsData] = useState<Requirement[]>([]);
-  
+
+  const [offersData, setOffersData] = useState<Requirement[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // console.log(quotes," ",loading," ",error)
+
   const url =process.env.NEXT_PUBLIC_BACKEND_URL
 
   useEffect(() => {
@@ -36,7 +39,7 @@ export default function Page() {
     if (!accessToken) {
       window.location.href = "/signin";
     } else {
-      console.log("Access Token:", accessToken);
+      // console.log("Access Token:", accessToken);
       
       // Define the function to fetch quotes
       const fetchQuotes = async () => {
@@ -55,7 +58,7 @@ export default function Page() {
             }
           );
           
-          console.log("Quotes response:", response.data.data);
+          // console.log("Quotes response:", response.data.data);
           
           // Check if response is successful
           if (response.data.success) {
@@ -73,9 +76,50 @@ export default function Page() {
           setLoading(false);
         }
       };
+
+
+      const fetchOffer = async () => {
+        console.log("Fetching offers...");
+        try {
+          setLoading(true);
+          setError(null);
+          
+          // Make API request with authentication header
+          const response = await axios.get(
+            url+'/api/v1/supply/buyerOffer',
+            {
+              headers: {
+                "Authorization": `Bearer ${accessToken}`,
+                "Content-Type": "application/json"
+              }
+            }
+          );
+          
+          console.table( response.data.data);
+          
+          // Check if response is successful
+          if (response.data.success) {
+            // setQuotes(response.data.data);
+            setOffersData(response.data.data);
+            
+          } else {
+            setError(response.data.message || "Failed to fetch quotes");
+          }
+        } catch (err) {
+          console.error("Error fetching quotes:", err);
+          
+          // Handle different error types
+          
+        } finally {
+          setLoading(false);
+        }
+      };
       
+
+
       // Call the fetch function
       fetchQuotes();
+      fetchOffer();
     }
   }, [accessToken]);
 
@@ -373,96 +417,120 @@ createdAt}</td>
               <table className="min-w-full bg-white rounded-2xl overflow-hidden text-sm text-left">
                 <thead className="bg-gray-100">
                   <tr className="text-black font-extrabold">
-                    <th className="px-4 py-3">Offer ID</th>
                     <th className="px-4 py-3">Lead ID</th>
                     <th className="px-4 py-3">Part Name</th>
-                    <th className="px-4 py-3">Your Price/Pcs</th>
-                    <th className="px-4 py-3">Your Lead Time</th>
-                    <th className="px-4 py-3">Submitted On</th>
+                    <th className="px-4 py-3">Category</th>
+                    <th className="px-4 py-3">Quantity</th>
+                    <th className="px-4 py-3">Admin Price</th>
                     <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Created Date</th>
                     <th className="px-4 py-3">Action</th>
                   </tr>
                 </thead>
-                <tbody className=" ">
-                  {[
-                    {
-                      offerId: "Q1001",
-                      leadId: "L1001",
-                      part: "Metal Bracket",
-                      price: "₹25,000",
-                      leadTime: "15-Jan-2023",
-                      submitted: "12-May-2023",
-                      status: "Approved",
-                      statusColor: "teal-500",
-                    },
-                    {
-                      offerId: "Q1002",
-                      leadId: "L1003",
-                      part: "PCB Assembly",
-                      price: "₹1,25,000",
-                      leadTime: "22-Feb-2023",
-                      submitted: "10-May-2023",
-                      status: "Approved",
-                      statusColor: "teal-500",
-                    },
-                    {
-                      offerId: "Q1003",
-                      leadId: "L1004",
-                      part: "Aluminum Enclosure",
-                      price: "₹74,000",
-                      leadTime: "10-Mar-2023",
-                      submitted: "20-May-2023",
-                      status: "Rejected",
-                      statusColor: "red-600",
-                    },
-                    {
-                      offerId: "Q1004",
-                      leadId: "L1002",
-                      part: "Plastic Housing",
-                      price: "₹55,000",
-                      leadTime: "05-Apr-2023",
-                      submitted: "28-May-2023",
-                      status: "Approved",
-                      statusColor: "teal-500",
-                    },
-                  ].map((quote, index) => (
-                    <tr key={index} className="border-t border-gray-300">
-                      <td className="px-4 py-3 font-semibold text-black">
-                        {quote.offerId}
-                      </td>
-                      <td className="px-4 py-3 font-semibold text-black">
-                        {quote.leadId}
-                      </td>
-                      <td className="px-4 py-3 font-semibold text-black">
-                        {quote.part}
-                      </td>
-                      <td className="px-4 py-3 font-semibold text-black">
-                        {quote.price}
-                      </td>
-                      <td className="px-4 py-3 font-semibold text-black">
-                        {quote.leadTime}
-                      </td>
-                      <td className="px-4 py-3 font-semibold text-black">
-                        {quote.submitted}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={
-                            quote.status === "Approved"
-                              ? "inline-block px-3 py-1 text-xs font-bold text-teal-500 bg-teal-50 rounded"
-                              : "inline-block px-3 py-1 text-xs font-bold text-red-600 bg-red-50 rounded"
-                          }
-                        >
-                          {quote.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <button className="px-4 py-1 text-xs font-bold text-indigo-500 border border-indigo-500 rounded-lg">
-                          View
-                        </button>
+                <tbody className="divide-y divide-gray-200">
+                  {offersData.map((offer, index) => (
+                    <React.Fragment key={index}>
+                      <tr className="border-t border-gray-300 bg-white hover:bg-gray-50">
+                        <td className="px-4 py-3 font-semibold text-black">
+                          {offer.leadId}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-black">
+                          {offer.partName}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-black">
+                          {offer.category}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-black">
+                          {offer.quantity}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-black">
+                          ₹{offer.adminOfferPrice?.toLocaleString() || 'N/A'}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-block px-3 py-1 text-xs font-bold rounded
+                            ${offer.status === 'approved' ? 'text-teal-500 bg-teal-50' : 
+                              offer.status === 'pending' ? 'text-yellow-600 bg-yellow-50' : 
+                              'text-red-600 bg-red-50'}`}
+                          >
+                            {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-black">
+                          {new Date(offer.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="px-4 py-3">
+                          <button className="px-4 py-1 text-xs font-bold text-indigo-500 border border-indigo-500 rounded-lg hover:bg-indigo-50">
+                            Details
+                          </button>
+                        </td>
+                      </tr>
+                      
+                      {/* Supplier Offers Section */}
+                      {offer.supplierOffers && offer.supplierOffers.length > 0 && (
+                        <tr>
+                          <td colSpan={8} className="px-0 py-0">
+                            <div className="bg-gray-50 px-8 py-3">
+                              <h4 className="text-sm font-bold text-gray-700 mb-2">Supplier Offers</h4>
+                              <div className="overflow-x-auto">
+                                <table className="min-w-full bg-white border border-gray-200 rounded-md">
+                                  <thead className="bg-gray-100">
+                                    <tr className="text-xs text-gray-700">
+                                      <th className="px-3 py-2">Supplier</th>
+                                      {/* <th className="px-3 py-2">Price</th> */}
+                                      <th className="px-3 py-2">Status</th>
+                                      <th className="px-3 py-2">Date</th>
+                                      <th className="px-3 py-2">Note</th>
+                                      <th className="px-3 py-2">Action</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {offer.supplierOffers.map((supplier, idx) => (
+                                      <tr key={idx} className="border-t border-gray-200 hover:bg-gray-50">
+                                        <td className="px-3 py-2 text-xs font-medium">
+                                          {supplier.supplierName}
+                                        </td>
+                                        {/* <td className="px-3 py-2 text-xs font-medium">
+                                          ₹{supplier.offerPrice?.toLocaleString() || 'N/A'}
+                                        </td> */}
+                                        <td className="px-3 py-2">
+                                          <span className={`inline-block px-2 py-1 text-xs font-bold rounded
+                                            ${supplier.status === 'approved' ? 'text-teal-500 bg-teal-50' : 
+                                              supplier.status === 'pending' ? 'text-yellow-600 bg-yellow-50' : 
+                                              'text-red-600 bg-red-50'}`}
+                                          >
+                                            {supplier.status.charAt(0).toUpperCase() + supplier.status.slice(1)}
+                                          </span>
+                                        </td>
+                                        <td className="px-3 py-2 text-xs">
+                                          {supplier.offerDate ? new Date(supplier.offerDate).toLocaleDateString() : 'N/A'}
+                                        </td>
+                                        <td className="px-3 py-2 text-xs max-w-[150px] truncate">
+                                          {supplier.note || 'No notes'}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                          <button className="px-3 py-1 text-xs font-medium text-blue-500 hover:underline">
+                                            View
+                                          </button>
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))}
+                  
+                  {offersData.length === 0 && (
+                    <tr>
+                      <td colSpan={8} className="px-4 py-6 text-center text-gray-500">
+                        No quote offers available
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

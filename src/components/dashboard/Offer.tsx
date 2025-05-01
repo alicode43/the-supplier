@@ -145,18 +145,28 @@ export default function Offer() {
   // Update offer status
   const handleStatusUpdate = async () => {
     if (!selectedOfferDetails) return;
+    if(newPrice === ""){ // Fixed condition - was incorrectly returning if newPrice was NOT empty
+      alert("Please enter a price");
+      return;
+    }
     
     setUpdatingStatus(true);
     try {
-        await axios.patch(
-            `${url}/api/v1/supply/updateOfferStatus/${selectedOfferDetails._id}`,
-            { status: newStatus },
+        await axios.post(
+            `${url}/api/v1/supply/updateOfferStatus`,
+            {
+                status: newStatus,
+                quoteId: selectedOfferDetails.quoteId,
+                supplierId: selectedOfferDetails.supplierId,
+                price: newPrice
+            },
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             }
         );
+        setNewPrice("");
         
         // Update local state to reflect the change
         const updatedOffers = offers.map(offer => 
@@ -306,9 +316,9 @@ export default function Offer() {
                                   // Create a default/empty supplier offer object or use a test one
                                   setSelectedOfferDetails({
                                     _id: "",
-                                    supplierId: "",
+                                    supplierId: supplierOffer.supplierId,
                                     supplierName: supplierOffer.supplierName,
-                                    quoteId: "",
+                                    quoteId: supplierOffer.quoteId,
                                     offerPrice: supplierOffer.offerPrice,
                                     offerDate: supplierOffer.offerDate,
                                     status: supplierOffer.status,
@@ -331,13 +341,7 @@ export default function Offer() {
                     ) : (
                       <span>No notes available</span>
                     )}
-                    {/* {offer.supplierOffers.length > 0 ? (offer.supplierOffers[0].note) : ()} */}
-                    {/* {offer.supplierOffers.length > 0 ? (offer.supplierOffers[0].note
-                    ):()}
-
-                      {/* {offer.
-supplierOffers[0]}
-                     */}
+          
                
 
                     </td>
@@ -369,12 +373,7 @@ supplierOffers[0]}
 
 
 
-    {/* <div className="flex flex-col gap-2.5 overflow-hidden">
-  <div className="flex justify-between items-center">
-    <h1 className="text-neutral-800 text-3xl font-bold">Offers sddsdsManagement</h1>
-   
-  </div>
-</div> */}
+ 
 
 
 
@@ -396,6 +395,10 @@ supplierOffers[0]}
                     <div>
                         <p className="text-sm font-semibold text-gray-600">Supplier Name</p>
                         <p className="text-lg">{selectedOfferDetails.supplierName}</p>
+                        <p>{selectedOfferDetails.supplierId}</p>
+                        <p>{selectedOfferDetails.quoteId}</p>
+                        {/* <p>{selectedOfferDetails}</p> */}
+           
                     </div>
                     <div>
                         <p className="text-sm font-semibold text-gray-600">Offer Price</p>
