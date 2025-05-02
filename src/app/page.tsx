@@ -15,7 +15,7 @@ import {
   Timer,
 } from "lucide-react";
 // Link
-import Footer from "../../components/frontend/Footer";
+import Footer from "@/components/frontend/Footer";
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
@@ -153,7 +153,7 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="bg-primary text-white py-12 md:py-20 ">
+      <section className="bg-primary text-white py-12 md:py-0 md:pb-20">
         <div className="container mx-auto md:px-0 px-4  flex flex-col md:flex-row items-center gap-8 md:w-4/5 md:p-20">
           <div className="flex-1 space-y-4">
             <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-white/10 mb-4">

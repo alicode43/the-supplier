@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-
+// import Link from "next/link";
 const Navbar: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -46,13 +46,13 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-[#046BD2] text-white sticky w-full border-b border-gray-200">
+    <nav className="bg-[#046BD2] text-white sticky top-0 z-10 w-full border-b border-gray-200">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <a href="" className="flex items-center space-x-3 rtl:space-x-reverse">
+        <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           <span className="self-center text-2xl font-semibold whitespace-nowrap">
             TheSupplier
           </span>
-        </a>
+        </Link>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse ">
           {isAuthenticated ? (
             <div className="relative" ref={dropdownRef}>
@@ -131,31 +131,31 @@ const Navbar: React.FC = () => {
         >
           <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-[#046BD2]">
             <li>
-              <a
-                href="#"
+              <Link
+                href="/"
                 className="block py-2 px-3 bg-blue-700 rounded-sm md:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full"
                 aria-current="page"
               >
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/how-it-work"
                 className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300"
               >
                 How it works
-              </a>
+              </Link>
             </li>
 
             <li className="relative group">
               <div className="flex items-center justify-between py-2 px-3 md:p-0 md:flex">
-                <a
-                  href="#"
+                <Link
+                  href="/services"
                   className="py-2 md:py-0 rounded-sm hover:bg-gray-100 md:hover:bg-transparent relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300 flex items-center"
                 >
                   Services
-                  <svg
+                  {/* <svg
                     className="w-4 h-4 ml-1"
                     fill="none"
                     stroke="currentColor"
@@ -168,10 +168,10 @@ const Navbar: React.FC = () => {
                       strokeWidth="2"
                       d="M19 9l-7 7-7-7"
                     ></path>
-                  </svg>
-                </a>
+                  </svg> */}
+                </Link>
               </div>
-              <div className="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-20 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
+              {/* <div className="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-20 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
                 <div className="absolute h-2 w-full top-[-8px]"></div>
                 <Link href="/cnc-machining">
                   <span className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -233,32 +233,32 @@ const Navbar: React.FC = () => {
                      Plasma Cutting
                   </span>
                 </Link>
-              </div>
+              </div> */}
             </li>
             <li>
-              <a
+              <Link
                 href="/become-supplier"
                 className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300"
               >
                 Become A Supplier
-              </a>
+              </Link>
             </li>
 
             <li>
-              <a
+              <Link
                 href="/contact-us"
                 className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300"
               >
                 Contact
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/delivery"
                 className="block py-2 px-3 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:p-0 relative after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full md:hover:text-white transition-colors duration-300"
               >
                 Delivery
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

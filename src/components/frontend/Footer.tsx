@@ -1,8 +1,10 @@
+import { Facebook, Linkedin, Twitter } from "lucide-react";
+import Link from "next/link";
 
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t py-12 px-4">
+    <footer className="bg-primary border-t py-12 px-4 text-white">
     <div className="max-w-7xl mx-auto">
       <div className="grid md:grid-cols-4 gap-8">
         <div>
@@ -10,17 +12,38 @@ export default function Footer() {
         </div>
         <div>
           <h4 className="font-semibold mb-4">Resources</h4>
-          <ul className="space-y-2">
+          <ul className="space-y-2 cursor-pointer">
             <li>Blog</li>
-            <li>How It Works</li>
+            <li>
+              <Link
+              href="/how-it-work"
+
+              >
+
+              How It Works
+              </Link>
+              </li>
             <li>Community</li>
-            <li>Privacy Policy</li>
+            <Link href='/privacy-policy'>
+            Privacy Policy
+            </Link>
+         
           </ul>
         </div>
         <div>
           <h4 className="font-semibold mb-4">About</h4>
           <ul className="space-y-2">
-            <li>Homepage</li>
+            <li>
+          
+            <Link
+              href="/"
+
+              >
+
+             Homepage
+              </Link>
+                  
+            </li>
             <li>Team Profiles</li>
             <li>FAQ</li>
             <li>Contact Us</li>
@@ -36,8 +59,20 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="mt-8 pt-8 border-t text-sm text-gray-600">
+      <div className="mt-8 pt-8 border-t text-sm md:flex justify-between text-white">
         <p>© 2025 TheSupplier. All right reserved</p>
+        <div className="flex space-x-4 mt-4 md:mt-0">
+     
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className=" transition-colors">
+              <Linkedin size={20} fill="currentColor" />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="transition-colors">
+              <Twitter size={20} fill="currentColor" />
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="transition-colors">
+              <Facebook size={20} fill="currentColor" />
+            </a>
+          </div>
       </div>
     </div>
   </footer>
