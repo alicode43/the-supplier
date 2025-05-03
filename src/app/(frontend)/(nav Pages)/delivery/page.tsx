@@ -39,7 +39,7 @@ function Page() {
   return (
     <div>
         <Navbar />
-        <section className="w-full py-10 md:py-14 px-4 sm:px-6 lg:px-10 xl:px-20 relative">
+        <section className="w-full py-10 md:py-14 px-4 sm:px-6 lg:px-10 xl:px-20 relative -z-10">
         {/* Background grid lines - hidden on small screens */}
         <div className="hidden md:flex absolute top-0 left-0 right-0 bottom-0 justify-between opacity-60 px-4 sm:px-6 lg:px-10 xl:px-20 pointer-events-none">
           {[0, 1, 2, 3, 4].map((i) => (
