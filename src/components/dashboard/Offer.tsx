@@ -8,6 +8,16 @@ import Cookies from "js-cookie";
 export default function Offer() {
 
     const [newPrice, setNewPrice] = useState<number | string>("");
+    // Add state variables for edit modal
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editingOffer, setEditingOffer] = useState<Offer | null>(null);
+    const [editFormData, setEditFormData] = useState({
+      leadId: "",
+      partName: "",
+        price: "",
+        category: "",
+        quantity: "",
+    });
 
     const accessToken = Cookies.get("accessToken");
 
@@ -37,16 +47,16 @@ export default function Offer() {
 
 
   interface Offer {
-    targetPrice: ReactNode;
-    supplierOffers: any;
+    targetPrice: number;
+    supplierOffers: string;
     _id: string;          // MongoDB ID (6810acd82300871b92ee3b11)
-    name: string;         // Name (cha)
+    partName: string;         // Name (cha)
     price: number;        // Price (12)
-    type: string;         // Type (q)
+    category: string;         // Type (q)
     quantity: number;     // Quantity (123)
     status: string;       // Status (approved)
     createdAt: string;    // Date (2025-04-29T10:41:28.139Z)
-    notes: Array<any>;    // Notes array
+    notes: string;    // Notes array
     leadId: string;       // Lead ID (L0001)
   }
 
@@ -126,26 +136,100 @@ export default function Offer() {
 
   // Edit offer
   const handleEditOffer = (id: string) => {
-    // In a real app, this would navigate to edit form or open a modal
-    alert(`Edit offer #${id}`);
+    // Find the offer to edit
+    const offerToEdit = offers.find(offer => offer._id === id);
+    if (offerToEdit) {
+     
+      setEditingOffer(offerToEdit);
+   
+      const priceValue = offerToEdit.price !== undefined ? offerToEdit.price : 
+                        (typeof offerToEdit.targetPrice === 'number' ? offerToEdit.targetPrice : 0);
+      
+    
+      setEditFormData({
+        leadId: offerToEdit.leadId,
+        partName: offerToEdit.partName,
+        price: String(priceValue), // Convert to string safely
+        category: offerToEdit.category,
+        quantity: String(offerToEdit.quantity || 0), // Handle potential 
+      });
+      
+ 
+      setShowEditModal(true);
+    }
+  };
+
+  // Handle form input changes
+  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Save edited offer
+  const handleSaveEdit = async () => {
+    if (!editingOffer) return;
+    console.log("Saving edited offer:", editFormData);
+    const updateURL= url+"/api/v1/supply/updateOffer/";
+    try {
+    
+      console.log("Update URL:", updateURL);
+      const res=await axios.post(
+        updateURL,
+        {
+          offerId:editingOffer.leadId,
+          name: editFormData.partName,
+          price: parseFloat(editFormData.price),
+          type: editFormData.category,
+          quantity: parseInt(editFormData.quantity),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      
+      console.log("Response from update:", res.data);
+      // Update local state
+      const updatedOffers = offers.map(offer => 
+        offer._id === editingOffer._id 
+          ? { 
+              ...offer, 
+              name: editFormData.partName,
+              price: parseFloat(editFormData.price),
+              type: editFormData.category,
+              quantity: parseInt(editFormData.quantity),
+            } 
+          : offer
+      );
+      
+      setOffers(updatedOffers);
+      setFilteredOffers(updatedOffers);
+      
+      // Close modal
+      setShowEditModal(false);
+      setEditingOffer(null);
+      
+      alert("Offer updated successfully!");
+    } 
+    catch (error) {
+      console.error("Error updating offer:", error);
+      alert("Failed to update offer");
+    }
   };
 
   // Delete offer
   const handleDeleteOffer = (id:string) => {
-    // Check if we're running in a browser environment
-    if (typeof window !== 'undefined') {
-      // In a real app, this would call an API endpoint
-      if (window.confirm(`Are you sure you want to delete offer #${id}?`)) {
-        setOffers(offers.filter(offer => offer._id !== id));
-        setFilteredOffers(filteredOffers.filter(offer => offer._id !== id));
-      }
-    }
+    console.log("Deleting offer with ID:", id);
   };
 
   // Update offer status
   const handleStatusUpdate = async () => {
     if (!selectedOfferDetails) return;
-    if(newPrice === ""){ // Fixed condition - was incorrectly returning if newPrice was NOT empty
+    if(newPrice === ""){ 
       alert("Please enter a price");
       return;
     }
@@ -284,10 +368,10 @@ export default function Offer() {
                       {offer.leadId}
                     </td>
                     <td className="px-8 py-5 text-sm font-semibold text-black/90">
-                      {offer.name}
+                      {offer.partName}
                     </td>
                     <td className="px-8 py-5 text-sm font-semibold text-black/90">
-                      {offer.type}
+                      {offer.category}
                     </td>
                     <td className="px-8 py-5 text-sm font-semibold text-black/90">
                       ₹{offer.targetPrice}
@@ -460,6 +544,81 @@ export default function Offer() {
         </button>
     </div>
 </div>
+            </div>
+        </div>
+      )}
+
+      {/* Edit Offer Modal */}
+      {showEditModal && editingOffer && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-bold">Edit Offer</h3>
+                    <button 
+                        className="text-gray-500 hover:text-gray-700"
+                        onClick={() => setShowEditModal(false)}
+                    >
+                        <X size={24} />
+                    </button>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label className="text-sm font-semibold text-gray-600 block mb-1">Name</label>
+                        <input
+                            type="text"
+                            name="name"
+                            value={editFormData.name}
+                            onChange={handleEditFormChange}
+                            className="border p-2 rounded-lg w-full"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-sm font-semibold text-gray-600 block mb-1">Type</label>
+                        <input
+                            type="text"
+                            name="type"
+                            value={editFormData.type}
+                            onChange={handleEditFormChange}
+                            className="border p-2 rounded-lg w-full"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-sm font-semibold text-gray-600 block mb-1">Price (₹)</label>
+                        <input
+                            type="number"
+                            name="price"
+                            value={editFormData.price}
+                            onChange={handleEditFormChange}
+                            className="border p-2 rounded-lg w-full"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-sm font-semibold text-gray-600 block mb-1">Quantity</label>
+                        <input
+                            type="number"
+                            name="quantity"
+                            value={editFormData.quantity}
+                            onChange={handleEditFormChange}
+                            className="border p-2 rounded-lg w-full"
+                        />
+                    </div>
+                </div>
+                
+                <div className="border-t pt-4 flex justify-end">
+                    <button
+                        onClick={() => setShowEditModal(false)}
+                        className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 mr-2"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleSaveEdit}
+                        className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700"
+                    >
+                        Save Changes
+                    </button>
+                </div>
             </div>
         </div>
       )}
