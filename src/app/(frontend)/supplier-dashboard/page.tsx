@@ -20,7 +20,8 @@ export default function Page() {
       price: "₹25,000",
       leadTime: "15-Jan-2023",
       submitted: "12-May-2023",
-      viewUrl: "/supplier-dashboard/lead/L1001"
+      viewUrl: "/supplier-dashboard/lead/L1001",
+      attachments: null // Add this line to fix the type error
     },
     {
       leadId: "L1003",
@@ -31,7 +32,8 @@ export default function Page() {
       price: "₹1,25,000",
       leadTime: "22-Feb-2023",
       submitted: "10-May-2023",
-      viewUrl: "/supplier-dashboard/lead/L1003"
+      viewUrl: "/supplier-dashboard/lead/L1003",
+      attachments: null // Add this line to fix the type error
     },
     {
       leadId: "L1004",
@@ -42,7 +44,8 @@ export default function Page() {
       price: "₹74,000",
       leadTime: "10-Mar-2023",
       submitted: "20-May-2023",
-      viewUrl: "/supplier-dashboard/lead/L1004"
+      viewUrl: "/supplier-dashboard/lead/L1004",
+      attachments: null // Add this line to fix the type error
     },
     {
       leadId: "L1002",
@@ -53,7 +56,8 @@ export default function Page() {
       price: "₹55,000",
       leadTime: "05-Apr-2023",
       submitted: "28-May-2023",
-      viewUrl: "/supplier-dashboard/lead/L1002"
+      viewUrl: "/supplier-dashboard/lead/L1002",
+      attachments: null // Add this line to fix the type error
     }
   ];
 
