@@ -1,18 +1,25 @@
 'use client';
-import { useAdminContext } from '@/context/AdminContex'; // Note: Fix this import path if needed
+import { useAdminContext } from '@/context/AdminContex';
 import Dashboard from '@/components/dashboard/AdminDashboard';
 import AdminLeads from '@/components/dashboard/AminLeads';
 import Offer from '@/components/dashboard/Offer';
 import UserManagement from '@/components/dashboard/UserManagement';
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 function Page() {  
   // Use context instead of props
   const { activeComponent } = useAdminContext();
+  const router = useRouter();
   const accessToken = Cookies.get("accessToken");
-  if (!accessToken) {
-    window.location.href = "/signin";
-  } 
+  
+  useEffect(() => {
+    if (!accessToken) {
+      router.push("/signin");
+    }
+  }, [accessToken, router]);
+  
   // Render the appropriate component based on context
   const renderComponent = () => {
     switch (activeComponent) {
