@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Eye,X } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 export interface Lead {
   leadId: string;
@@ -12,8 +13,19 @@ export interface Lead {
   leadTime: string;
   submitted: string;
   viewUrl?: string;
+  attachments: Attachment[] | Attachment | null; // Made non-optional to match ItemWithAttachments
 }
-
+interface Attachment {
+  name?: string;
+  url: string;
+  size?: number;
+  type?: string;
+  // Add more fields if available
+}
+interface ItemWithAttachments {
+  attachments: Attachment[] | Attachment | null;
+  partName?: string;
+}
 interface LeadsTableProps {
   leads: Lead[];
   title?: string;
@@ -33,26 +45,29 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
 }) => {
 
     const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
-    const [currentAttachments, setCurrentAttachments] = useState<any[]>([]);
+    const [currentAttachments, setCurrentAttachments] = useState<Attachment[]>([]);
+
     const [currentItemName, setCurrentItemName] = useState("");
 
-    const openAttachmentModal = (item: any) => {
+    const openAttachmentModal = (item: ItemWithAttachments) => {
       if (!item.attachments) {
         toast.info("No attachments available for this item.");
         return;
       }
-      
-      if (Array.isArray(item.attachments) && item.attachments.length > 0) {
-        setCurrentAttachments(item.attachments);
+    
+      const attachmentsArray = Array.isArray(item.attachments)
+        ? item.attachments
+        : [item.attachments];
+    
+      if (attachmentsArray.length > 0) {
+        setCurrentAttachments(attachmentsArray);
         setCurrentItemName(item.partName || "Item");
         setIsAttachmentModalOpen(true);
       } else {
-        // If it's a single attachment (string or object)
-        setCurrentAttachments(Array.isArray(item.attachments) ? item.attachments : [item.attachments]);
-        setCurrentItemName(item.partName || "Item");
-        setIsAttachmentModalOpen(true);
+        toast.info("No attachments available for this item.");
       }
     };
+    
     
   return (
     <section className={`w-full px-4 sm:px-6 lg:px-8 py-6 ${className}`}>

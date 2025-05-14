@@ -52,14 +52,14 @@ export default function Page() {
   const [postedWithin, setPostedWithin] = useState("Any Time");
   
   // Search terms for filtering
-  const [reqSearchTerm, setReqSearchTerm] = useState("");
-  const [reqCategory, setReqCategory] = useState("");
-  const [reqDateRange, setReqDateRange] = useState("");
+  const [reqSearchTerm] = useState("");
+  const [reqCategory] = useState("");
+  const [reqDateRange] = useState("");
   
   // State for attachment modal
   const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
-  const [currentAttachments, setCurrentAttachments] = useState<any[]>([]);
-  const [currentItemName, setCurrentItemName] = useState("");
+  const [currentAttachments] = useState<Attachment[]>([]);
+  const [currentItemName] = useState("");
   
   const url = process.env.NEXT_PUBLIC_BACKEND_URL || "";
   const accessToken = Cookies.get("accessToken");
@@ -84,10 +84,10 @@ export default function Page() {
         
         // Check if response is successful
         if (response.data.success) {
-          const leads = response.data.data.map((lead: any) => ({
+          const leads = response.data.data.map((lead: Requirement) => ({
             ...lead,
             viewUrl: `/supplier-dashboard/lead/${lead.leadId}`,
-            price: `₹ ${lead.targetPrice}`
+            price: `₹ ${lead.targetPrice ? lead.targetPrice.toString() : "0"}`
           }));
           
           setRequirementsData(leads);
@@ -99,7 +99,8 @@ export default function Page() {
           setError(response.data.message || "Failed to fetch leads");
           toast.error("Failed to fetch leads");
         }
-      } catch (err: any) {
+      } catch (error) {
+        const err = error as Error;
         console.error("Error fetching leads:", err);
         setError(err.message || "An error occurred while fetching leads");
         toast.error("Error loading leads data");
@@ -195,7 +196,7 @@ export default function Page() {
     // Apply posted within filter
     if (postedWithin !== "Any Time") {
       const now = new Date();
-      let cutoffDate = new Date();
+      const cutoffDate = new Date();
       
       switch (postedWithin) {
         case "Last 24 hours":
@@ -223,22 +224,22 @@ export default function Page() {
   };
   
   // Open attachment modal function
-  const openAttachmentModal = (item: any) => {
-    if (!item.attachments) {
-      toast.info("No attachments available for this item.");
-      return;
-    }
+  // const openAttachmentModal = (item: any) => {
+  //   if (!item.attachments) {
+  //     toast.info("No attachments available for this item.");
+  //     return;
+  //   }
     
-    if (Array.isArray(item.attachments) && item.attachments.length > 0) {
-      setCurrentAttachments(item.attachments);
-      setCurrentItemName(item.partName || "Item");
-      setIsAttachmentModalOpen(true);
-    } else {
-      setCurrentAttachments(Array.isArray(item.attachments) ? item.attachments : [item.attachments]);
-      setCurrentItemName(item.partName || "Item");
-      setIsAttachmentModalOpen(true);
-    }
-  };
+  //   if (Array.isArray(item.attachments) && item.attachments.length > 0) {
+  //     setCurrentAttachments(item.attachments);
+  //     setCurrentItemName(item.partName || "Item");
+  //     setIsAttachmentModalOpen(true);
+  //   } else {
+  //     setCurrentAttachments(Array.isArray(item.attachments) ? item.attachments : [item.attachments]);
+  //     setCurrentItemName(item.partName || "Item");
+  //     setIsAttachmentModalOpen(true);
+  //   }
+  // };
 
   const renderPageNumbers = () => {
     const pages = [];
@@ -461,7 +462,7 @@ export default function Page() {
           </div>
         ) : (
           <LeadsTable 
-            leads={getPaginatedData()} 
+            leads={getPaginatedData()}
             viewAllUrl="/supplier-dashboard/leads"
           />
         )}

@@ -2,9 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { Edit, Trash2, FilterX, ChevronDown, ChevronUp, Search } from "lucide-react";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 export default function UserManagement() {
   // State for users and filters
+  const url=process.env.NEXT_PUBLIC_BACKEND_URL;
+  const token = Cookies.get("accessToken");
+  console.log(token);
   interface User {
     id: string;
     name: string;
@@ -27,63 +32,51 @@ export default function UserManagement() {
   const [joinDateRange, setJoinDateRange] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Sample data for demonstration
-  const mockUsers = [
-    {
-      id: "01",
-      name: "John Doe",
-      email: "john.doe@example.com",
-      userType: "supplier",
-      company: "Acme Corp",
-      joinDate: "15-Jan-2023",
-      status: "active"
-    },
-    {
-      id: "02",
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      userType: "buyer",
-      company: "XYZ Manufacturing",
-      joinDate: "22-Feb-2023",
-      status: "active"
-    },
-    {
-      id: "03",
-      name: "Alice Johnson",
-      email: "alice.johnson@example.com",
-      userType: "admin",
-      company: "The Supplier",
-      joinDate: "10-Mar-2023",
-      status: "inactive"
-    },
-    {
-      id: "04",
-      name: "Bob Brown",
-      email: "bob.brown@example.com",
-      userType: "supplier",
-      company: "Tech Industries",
-      joinDate: "05-Apr-2023",
-      status: "active"
-    },
-    {
-      id: "05",
-      name: "Carol Wilson",
-      email: "carol.wilson@example.com",
-      userType: "buyer",
-      company: "Wilson Manufacturing",
-      joinDate: "18-May-2023",
-      status: "active"
+  const getUsers = async () => {
+    try {
+      const allUser = await axios.get(
+        `${url}/api/v1/users/get-all-user`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      // Transform API response to match User interface
+      const transformedUsers = allUser.data.data.map((user: any, index: number) => {
+        // Format date to be more readable
+        const date = new Date(user.updatedAt);
+        const formattedDate = date.toLocaleDateString('en-US', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        });
+        
+        return {
+          id: (index + 1).toString(),
+          name: user.name || 'Unknown',
+          email: user.email || 'No email',
+          userType: user.role || 'user',
+          company: user.company || 'Not specified',
+          joinDate: formattedDate,
+          status: user.isVerify ? 'active' : 'inactive'
+        };
+      });
+      
+      setUsers(transformedUsers);
+      setFilteredUsers(transformedUsers);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setIsLoading(false);
     }
-  ];
+  };
 
   // Fetch users on component mount
   useEffect(() => {
-    // In a real app, this would be an API call
-    setTimeout(() => {
-      setUsers(mockUsers);
-      setFilteredUsers(mockUsers);
-      setIsLoading(false);
-    }, 800);
+    getUsers();
   }, []);
 
   // Apply filters when filter values change
@@ -189,6 +182,8 @@ export default function UserManagement() {
         return <div>{type}</div>;
     }
   };
+
+  // Removed duplicate renderStatusBadge function
 
   // Render status badge
   const renderStatusBadge = (status: string) => {
@@ -304,7 +299,7 @@ export default function UserManagement() {
         <div className="bg-white rounded-2xl shadow-sm">
           {isLoading ? (
             <div className="py-20 text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-sky-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-sky-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
               <p className="mt-4 text-gray-600">Loading users...</p>
             </div>
           ) : (
@@ -312,7 +307,7 @@ export default function UserManagement() {
               <thead>
                 <tr>
                   {[
-                    { id: "id", label: "ID", sortable: true },
+             
                     { id: "name", label: "NAME", sortable: true },
                     { id: "email", label: "EMAIL", sortable: true },
                     { id: "userType", label: "USER TYPE", sortable: true },
@@ -342,9 +337,7 @@ export default function UserManagement() {
               <tbody className="divide-y divide-gray-200">
                 {filteredUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-8 py-5 text-sm font-semibold text-black/90">
-                      {user.id}
-                    </td>
+           
                     <td className="px-8 py-5 text-sm font-semibold text-black/90">
                       {user.name}
                     </td>

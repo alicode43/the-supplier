@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, Fragment } from "react";
-import { Trash2, Eye, FilterX, ChevronDown, ChevronUp, X, CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Trash2, Eye, FilterX, ChevronDown, X } from "lucide-react";
 import Cookies from "js-cookie";
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
@@ -56,7 +56,7 @@ export default function AdminLeads() {
  
   // State for attachment modal
   const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
-  const [currentAttachments, setCurrentAttachments] = useState<any[]>([]);
+  const [currentAttachments, setCurrentAttachments] = useState<(Attachment | string)[]>([]);
   const [currentItemName, setCurrentItemName] = useState("");
 
   // State for requirements data and filtering
@@ -74,7 +74,7 @@ export default function AdminLeads() {
  
 
   // Open attachment modal function
-  const openAttachmentModal = (item: any) => {
+  const openAttachmentModal = (item: Requirement) => {
     if (!item.attachments) {
       toast.info("No attachments available for this item.");
       return;
@@ -199,9 +199,13 @@ export default function AdminLeads() {
       } else {
         toast.error(response.data.message || "Failed to update status");
       }
-    } catch (err: any) {
-      console.error("Error updating status:", err);
-      toast.error(err.message || "An error occurred while updating status");
+    } catch (err) {
+   
+      if (err instanceof Error) {
+        toast.error(err.message || "An error occurred while updating status");
+      } else {
+        toast.error("An error occurred while updating status");
+      }
     } finally {
       // Reset editing and confirming state
       setEditingStatus(prev => ({
@@ -282,9 +286,13 @@ export default function AdminLeads() {
         } else {
           setError(response.data.message || "Failed to fetch quotes");
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error("Error fetching quotes:", err);
-        setError(err.message || "An error occurred while fetching quotes");
+        if (err instanceof Error) {
+          setError(err.message || "An error occurred while fetching quotes");
+        } else {
+          setError("An error occurred while fetching quotes");
+        }
         
         // if (axios.isAxiosError(err) && err.response?.status === 401) {
         //   toast.error("Session expired. Please login again.");

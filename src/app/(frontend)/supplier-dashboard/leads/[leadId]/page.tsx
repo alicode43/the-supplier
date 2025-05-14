@@ -41,8 +41,10 @@ interface LeadDetailsPageProps {
 
 export default function LeadDetailsPage({ params }: LeadDetailsPageProps) {
   // Unwrap params using React.use() for future compatibility
-  const unwrappedParams = React.use(params);
-  const { leadId } = unwrappedParams;
+  // const unwrappedParams = React.use(params);
+  // const { leadId } = unwrappedParams;
+  // console.log("Lead ID from params:", leadId);
+  const { leadId } = params;  
   
   const [leadDetails, setLeadDetails] = useState<LeadDetailsType | null>(null);
   const accessToken = Cookies.get("accessToken");
@@ -134,15 +136,14 @@ export default function LeadDetailsPage({ params }: LeadDetailsPageProps) {
       );
       setLeadDetails(response.data.data);
       
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error submitting offer:', error);
       setFormMessage({
         type: 'error',
         text: error.response?.data?.message || 'Failed to submit offer. Please try again.'
       });
-    } finally {
-      setIsSubmitting(false);
-    }
+    } 
+
   };
 
   return (

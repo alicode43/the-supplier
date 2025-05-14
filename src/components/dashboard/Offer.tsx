@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { Eye, Edit, Trash2, ChevronDown, ChevronUp, X } from "lucide-react";
 import axios from "axios";
 import Cookies from "js-cookie";
+// import { useRouter } from 'next/router';
 
 export default function Offer() {
+  // const router = useRouter();
 
     const [newPrice, setNewPrice] = useState<number | string>("");
     // Add state variables for edit modal
@@ -48,7 +50,7 @@ export default function Offer() {
 
   interface Offer {
     targetPrice: number;
-    supplierOffers: string;
+    supplierOffers: SupplierOffer[];
     _id: string;          // MongoDB ID (6810acd82300871b92ee3b11)
     partName: string;         // Name (cha)
     price: number;        // Price (12)
@@ -192,28 +194,38 @@ export default function Offer() {
         }
       );
       
-      console.log("Response from update:", res.data);
-      // Update local state
-      const updatedOffers = offers.map(offer => 
-        offer._id === editingOffer._id 
-          ? { 
-              ...offer, 
-              name: editFormData.partName,
-              price: parseFloat(editFormData.price),
-              type: editFormData.category,
-              quantity: parseInt(editFormData.quantity),
-            } 
-          : offer
-      );
-      
-      setOffers(updatedOffers);
-      setFilteredOffers(updatedOffers);
-      
-      // Close modal
-      setShowEditModal(false);
-      setEditingOffer(null);
-      
-      alert("Offer updated successfully!");
+      // console.log("Response from update:", res.data);
+      if (res.data.statusCode == 200) {
+
+        console.log("Editing offer:",);
+        console.log( editingOffer);
+        // console.log("Offer updated successfully:", res.data);
+        // Update local state
+        const updatedOffers = offers.map(offer => 
+          offer.leadId === editingOffer.leadId 
+            ? { 
+                ...offer, 
+                partName: editFormData.partName,
+                price: parseFloat(editFormData.price),
+                category: editFormData.category,
+                quantity: parseInt(editFormData.quantity),
+              } 
+            : offer
+        );
+        
+        setOffers(updatedOffers);
+        setFilteredOffers(updatedOffers);
+        setShowEditModal(false);
+     
+ 
+        
+     
+      }
+      else{
+        alert("Failed to update offer");
+        return;
+      }
+    
     } 
     catch (error) {
       console.error("Error updating offer:", error);
@@ -564,11 +576,11 @@ export default function Offer() {
                 
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label className="text-sm font-semibold text-gray-600 block mb-1">Name</label>
+                        <label className="text-sm font-semibold text-gray-600 block mb-1">Part Name</label>
                         <input
                             type="text"
-                            name="name"
-                            value={editFormData.name}
+                            name="partName"
+                            value={editFormData.partName}
                             onChange={handleEditFormChange}
                             className="border p-2 rounded-lg w-full"
                         />
@@ -577,8 +589,8 @@ export default function Offer() {
                         <label className="text-sm font-semibold text-gray-600 block mb-1">Type</label>
                         <input
                             type="text"
-                            name="type"
-                            value={editFormData.type}
+                            name="category"
+                            value={editFormData.category}
                             onChange={handleEditFormChange}
                             className="border p-2 rounded-lg w-full"
                         />
@@ -593,6 +605,7 @@ export default function Offer() {
                             className="border p-2 rounded-lg w-full"
                         />
                     </div>
+
                     <div>
                         <label className="text-sm font-semibold text-gray-600 block mb-1">Quantity</label>
                         <input
