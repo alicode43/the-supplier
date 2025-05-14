@@ -301,7 +301,20 @@ export default function Page() {
   const getPaginatedData = () => {
     const startIndex = (currentPage - 1) * 10;
     const endIndex = startIndex + 10;
-    return filteredRequirements.slice(startIndex, endIndex);
+    
+    // Transform Requirement[] to Lead[] by making sure all required properties are present
+    return filteredRequirements.slice(startIndex, endIndex).map(req => ({
+      leadId: req.leadId,
+      partName: req.partName || "",
+      category: req.category || "",
+      material: req.material || "",
+      quantity: req.quantity || 0,
+      price: req.price || `₹ ${req.targetPrice || "0"}`,  // Ensure price is not undefined
+      leadTime: req.leadTime || "",
+      submitted: req.submitted || req.createdAt || new Date().toISOString(), // Ensure submitted is not undefined
+      viewUrl: req.viewUrl || `/supplier-dashboard/leads/${req.leadId}`,
+      attachments: req.attachments || null
+    }));
   };
 
   return (
