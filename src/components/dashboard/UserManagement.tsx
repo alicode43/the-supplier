@@ -45,6 +45,7 @@ export default function UserManagement() {
       );
       
       // Transform API response to match User interface
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const transformedUsers = allUser.data.data.map((user: any, index: number) => {
         // Format date to be more readable
         const date = new Date(user.updatedAt);

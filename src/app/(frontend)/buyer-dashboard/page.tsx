@@ -1,17 +1,18 @@
 "use client";
 
-import Navbar from './Navbar';
+import Navbar from "./Navbar";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Cookies from "js-cookie";
-import axios from 'axios';
+import axios from "axios";
 
 export default function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10;
-  const accessToken = Cookies.get("accessToken")
- 
+  const accessToken = Cookies.get("accessToken");
+
   interface Requirement {
+    // supplierOffers: boolean;
     leadId: string;
     id: string;
     partName: string;
@@ -21,18 +22,28 @@ export default function Page() {
     targetPrice: number;
     leadTime: string;
     createdAt: string;
- 
+    adminOfferPrice: number;
+    status: string;
+    supplierOffers: [
+      {
+        supplierName: string;
+        offerPrice: number;
+        status: string;
+        offerDate: string;
+        note: string;
+      }
+    ];
   }
-  
+
   const [requirementsData, setRequirementsData] = useState<Requirement[]>([]);
 
   const [offersData, setOffersData] = useState<Requirement[]>([]);
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
   // console.log(quotes," ",loading," ",error)
 
-  const url =process.env.NEXT_PUBLIC_BACKEND_URL
+  const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     // Check if user is authenticated
@@ -40,82 +51,75 @@ export default function Page() {
       window.location.href = "/signin";
     } else {
       // console.log("Access Token:", accessToken);
-      
+
       // Define the function to fetch quotes
       const fetchQuotes = async () => {
         try {
-          setLoading(true);
-          setError(null);
-          
+          // setLoading(true);
+          // setError(null);
+
           // Make API request with authentication header
           const response = await axios.get(
-            url+'/api/v1/supply/getAllQuotes',
+            url + "/api/v1/supply/getAllQuotes",
             {
               headers: {
-                "Authorization": `Bearer ${accessToken}`,
-                "Content-Type": "application/json"
-              }
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+              },
             }
           );
-          
+
           // console.log("Quotes response:", response.data.data);
-          
+
           // Check if response is successful
           if (response.data.success) {
             // setQuotes(response.data.data);
             setRequirementsData(response.data.data);
-          } else {
-            setError(response.data.message || "Failed to fetch quotes");
           }
+          // else {
+          //   setError(response.data.message || "Failed to fetch quotes");
+          // }
         } catch (err) {
           console.error("Error fetching quotes:", err);
-          
+
           // Handle different error types
-          
         } finally {
-          setLoading(false);
+          // setLoading(false);
         }
       };
-
 
       const fetchOffer = async () => {
         console.log("Fetching offers...");
         try {
-          setLoading(true);
-          setError(null);
-          
+          // setLoading(true);
+          // setError(null);
+
           // Make API request with authentication header
-          const response = await axios.get(
-            url+'/api/v1/supply/buyerOffer',
-            {
-              headers: {
-                "Authorization": `Bearer ${accessToken}`,
-                "Content-Type": "application/json"
-              }
-            }
-          );
-          
-          console.table( response.data.data);
-          
+          const response = await axios.get(url + "/api/v1/supply/buyerOffer", {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          console.table(response.data.data);
+
           // Check if response is successful
           if (response.data.success) {
             // setQuotes(response.data.data);
             setOffersData(response.data.data);
-            
-          } else {
-            setError(response.data.message || "Failed to fetch quotes");
           }
+          // else {
+          //   setError(response.data.message || "Failed to fetch quotes");
+          // }
         } catch (err) {
           console.error("Error fetching quotes:", err);
-          
+
           // Handle different error types
-          
         } finally {
-          setLoading(false);
+          // setLoading(false);
         }
       };
-      
-
 
       // Call the fetch function
       fetchQuotes();
@@ -123,8 +127,6 @@ export default function Page() {
     }
   }, [accessToken]);
 
-
-  
   const renderPageNumbers = () => {
     const pages = [];
 
@@ -221,7 +223,7 @@ export default function Page() {
       </thead>
     </table>
   </section>;
-  
+
   return (
     <div className="min-h-screen bg-gray-50 font-inter">
       <Navbar />
@@ -372,29 +374,28 @@ export default function Page() {
                   </th>
                 </tr>
               </thead>
-          <tbody className="divide-y divide-gray-200 text-sm text-black font-semibold">
-  {requirementsData.map((item) => (
-    <tr key={item.leadId}>
-      <td className="px-4 py-3">{item.leadId}</td>
-      <td className="px-4 py-3">{item.partName}</td>
-      <td className="px-4 py-3">{item.category}</td>
-      <td className="px-4 py-3">{item.material}</td>
-      <td className="px-4 py-3">{item.quantity}</td>
-      <td className="px-4 py-3">{item.targetPrice}</td>
-      <td className="px-4 py-3">{item.leadTime}</td>
-      <td className="px-4 py-3">{item.
-createdAt}</td>
-      <td className="px-4 py-3">
-        <button 
-          // onClick={() => router.push(`/buyer-dashboard/view-requirement/${item.id}`)}
-          className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1 hover:bg-indigo-50"
-        >
-          View
-        </button>
-      </td>
-    </tr>
-  ))}
-</tbody>
+              <tbody className="divide-y divide-gray-200 text-sm text-black font-semibold">
+                {requirementsData.map((item) => (
+                  <tr key={item.leadId}>
+                    <td className="px-4 py-3">{item.leadId}</td>
+                    <td className="px-4 py-3">{item.partName}</td>
+                    <td className="px-4 py-3">{item.category}</td>
+                    <td className="px-4 py-3">{item.material}</td>
+                    <td className="px-4 py-3">{item.quantity}</td>
+                    <td className="px-4 py-3">{item.targetPrice}</td>
+                    <td className="px-4 py-3">{item.leadTime}</td>
+                    <td className="px-4 py-3">{item.createdAt}</td>
+                    <td className="px-4 py-3">
+                      <button
+                        // onClick={() => router.push(`/buyer-dashboard/view-requirement/${item.id}`)}
+                        className="text-indigo-500 text-xs font-bold border border-indigo-500 rounded-lg px-3 py-1 hover:bg-indigo-50"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </section>
@@ -402,13 +403,8 @@ createdAt}</td>
         <section className="p-4">
           <div className="flex flex-col gap-2.5">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-medium text-black">
-                Recent Quotes
-              </h2>
-              <a
-                href="#"
-                className="text-xs font-bold text-black underline"
-              >
+              <h2 className="text-xl font-medium text-black">Recent Quotes</h2>
+              <a href="#" className="text-xs font-bold text-black underline">
                 View All
               </a>
             </div>
@@ -444,15 +440,21 @@ createdAt}</td>
                           {offer.quantity}
                         </td>
                         <td className="px-4 py-3 font-semibold text-black">
-                          ₹{offer.adminOfferPrice?.toLocaleString() || 'N/A'}
+                          ₹{offer.adminOfferPrice?.toLocaleString() || "N/A"}
                         </td>
                         <td className="px-4 py-3">
-                          <span className={`inline-block px-3 py-1 text-xs font-bold rounded
-                            ${offer.status === 'approved' ? 'text-teal-500 bg-teal-50' : 
-                              offer.status === 'pending' ? 'text-yellow-600 bg-yellow-50' : 
-                              'text-red-600 bg-red-50'}`}
+                          <span
+                            className={`inline-block px-3 py-1 text-xs font-bold rounded
+                            ${
+                              offer.status === "approved"
+                                ? "text-teal-500 bg-teal-50"
+                                : offer.status === "pending"
+                                ? "text-yellow-600 bg-yellow-50"
+                                : "text-red-600 bg-red-50"
+                            }`}
                           >
-                            {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
+                            {offer.status.charAt(0).toUpperCase() +
+                              offer.status.slice(1)}
                           </span>
                         </td>
                         <td className="px-4 py-3 font-semibold text-black">
@@ -464,69 +466,92 @@ createdAt}</td>
                           </button>
                         </td>
                       </tr>
-                      
+
                       {/* Supplier Offers Section */}
-                      {offer.supplierOffers && offer.supplierOffers.length > 0 && (
-                        <tr>
-                          <td colSpan={8} className="px-0 py-0">
-                            <div className="bg-gray-50 px-8 py-3">
-                              <h4 className="text-sm font-bold text-gray-700 mb-2">Supplier Offers</h4>
-                              <div className="overflow-x-auto">
-                                <table className="min-w-full bg-white border border-gray-200 rounded-md">
-                                  <thead className="bg-gray-100">
-                                    <tr className="text-xs text-gray-700">
-                                      <th className="px-3 py-2">Supplier</th>
-                                      {/* <th className="px-3 py-2">Price</th> */}
-                                      <th className="px-3 py-2">Status</th>
-                                      <th className="px-3 py-2">Date</th>
-                                      <th className="px-3 py-2">Note</th>
-                                      <th className="px-3 py-2">Action</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {offer.supplierOffers.map((supplier, idx) => (
-                                      <tr key={idx} className="border-t border-gray-200 hover:bg-gray-50">
-                                        <td className="px-3 py-2 text-xs font-medium">
-                                          {supplier.supplierName}
-                                        </td>
-                                        {/* <td className="px-3 py-2 text-xs font-medium">
+                      {offer.supplierOffers &&
+                        offer.supplierOffers.length > 0 && (
+                          <tr>
+                            <td colSpan={8} className="px-0 py-0">
+                              <div className="bg-gray-50 px-8 py-3">
+                                <h4 className="text-sm font-bold text-gray-700 mb-2">
+                                  Supplier Offers
+                                </h4>
+                                <div className="overflow-x-auto">
+                                  <table className="min-w-full bg-white border border-gray-200 rounded-md">
+                                    <thead className="bg-gray-100">
+                                      <tr className="text-xs text-gray-700">
+                                        <th className="px-3 py-2">Supplier</th>
+                                        {/* <th className="px-3 py-2">Price</th> */}
+                                        <th className="px-3 py-2">Status</th>
+                                        <th className="px-3 py-2">Date</th>
+                                        <th className="px-3 py-2">Note</th>
+                                        <th className="px-3 py-2">Action</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {offer.supplierOffers.map(
+                                        (supplier, idx) => (
+                                          <tr
+                                            key={idx}
+                                            className="border-t border-gray-200 hover:bg-gray-50"
+                                          >
+                                            <td className="px-3 py-2 text-xs font-medium">
+                                              {supplier.supplierName}
+                                            </td>
+                                            {/* <td className="px-3 py-2 text-xs font-medium">
                                           ₹{supplier.offerPrice?.toLocaleString() || 'N/A'}
                                         </td> */}
-                                        <td className="px-3 py-2">
-                                          <span className={`inline-block px-2 py-1 text-xs font-bold rounded
-                                            ${supplier.status === 'approved' ? 'text-teal-500 bg-teal-50' : 
-                                              supplier.status === 'pending' ? 'text-yellow-600 bg-yellow-50' : 
-                                              'text-red-600 bg-red-50'}`}
-                                          >
-                                            {supplier.status.charAt(0).toUpperCase() + supplier.status.slice(1)}
-                                          </span>
-                                        </td>
-                                        <td className="px-3 py-2 text-xs">
-                                          {supplier.offerDate ? new Date(supplier.offerDate).toLocaleDateString() : 'N/A'}
-                                        </td>
-                                        <td className="px-3 py-2 text-xs max-w-[150px] truncate">
-                                          {supplier.note || 'No notes'}
-                                        </td>
-                                        <td className="px-3 py-2">
-                                          <button className="px-3 py-1 text-xs font-medium text-blue-500 hover:underline">
-                                            View
-                                          </button>
-                                        </td>
-                                      </tr>
-                                    ))}
-                                  </tbody>
-                                </table>
+                                            <td className="px-3 py-2">
+                                              <span
+                                                className={`inline-block px-2 py-1 text-xs font-bold rounded
+                                            ${
+                                              supplier.status === "approved"
+                                                ? "text-teal-500 bg-teal-50"
+                                                : supplier.status === "pending"
+                                                ? "text-yellow-600 bg-yellow-50"
+                                                : "text-red-600 bg-red-50"
+                                            }`}
+                                              >
+                                                {supplier.status
+                                                  .charAt(0)
+                                                  .toUpperCase() +
+                                                  supplier.status.slice(1)}
+                                              </span>
+                                            </td>
+                                            <td className="px-3 py-2 text-xs">
+                                              {supplier.offerDate
+                                                ? new Date(
+                                                    supplier.offerDate
+                                                  ).toLocaleDateString()
+                                                : "N/A"}
+                                            </td>
+                                            <td className="px-3 py-2 text-xs max-w-[150px] truncate">
+                                              {supplier.note || "No notes"}
+                                            </td>
+                                            <td className="px-3 py-2">
+                                              <button className="px-3 py-1 text-xs font-medium text-blue-500 hover:underline">
+                                                View
+                                              </button>
+                                            </td>
+                                          </tr>
+                                        )
+                                      )}
+                                    </tbody>
+                                  </table>
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
+                            </td>
+                          </tr>
+                        )}
                     </React.Fragment>
                   ))}
-                  
+
                   {offersData.length === 0 && (
                     <tr>
-                      <td colSpan={8} className="px-4 py-6 text-center text-gray-500">
+                      <td
+                        colSpan={8}
+                        className="px-4 py-6 text-center text-gray-500"
+                      >
                         No quote offers available
                       </td>
                     </tr>
@@ -575,5 +600,3 @@ createdAt}</td>
     </div>
   );
 }
-
-
