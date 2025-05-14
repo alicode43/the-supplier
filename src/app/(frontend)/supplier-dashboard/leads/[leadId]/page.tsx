@@ -2,7 +2,10 @@
 import React from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
+
+// Import the correct PageProps type from Next.js
+// import { PageProps } from 'next/types';
 
 interface Attachment {
   url: string;
@@ -33,10 +36,12 @@ interface LeadDetailsType {
   supplierOffers: SupplierOffer[];
 }
 
+// Update the interface to include all required properties from PageProps
 interface LeadDetailsPageProps {
   params: {
     leadId: string;
   };
+  searchParams?: Record<string, string | string[]>;
 }
 
 export default function LeadDetailsPage({ params }: LeadDetailsPageProps) {
@@ -138,9 +143,13 @@ export default function LeadDetailsPage({ params }: LeadDetailsPageProps) {
       
     } catch (error) {
       console.error('Error submitting offer:', error);
+      let errorMessage = 'Failed to submit offer. Please try again.';
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
       setFormMessage({
         type: 'error',
-        text: error.response?.data?.message || 'Failed to submit offer. Please try again.'
+        text: errorMessage
       });
     } 
 
@@ -281,16 +290,16 @@ export default function LeadDetailsPage({ params }: LeadDetailsPageProps) {
               </button>
             </div>
             <div className="flex-1 overflow-auto p-4 flex items-center justify-center">
-              {isImageFile(selectedAttachment) ? (
+              {isImageFile(selectedAttachment?.url) ? (
                 
                 <div className='flex flex-col items-center'>
                 <img 
-                  src={selectedAttachment} 
-                //   alt={selectedAttachment.name} 
+                  src={selectedAttachment?.url} 
+                  // alt={selectedAttachment?.name} 
                   className="max-w-full max-h-full object-contain"
                 />
                      <a 
-                    href={selectedAttachment} 
+                    href={selectedAttachment?.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -303,7 +312,7 @@ export default function LeadDetailsPage({ params }: LeadDetailsPageProps) {
                 <div className="text-center">
                   <p className="mb-4">  This file type may not be viewable directly in the browser.</p>
                   <a 
-                    href={selectedAttachment} 
+                    href={selectedAttachment?.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
